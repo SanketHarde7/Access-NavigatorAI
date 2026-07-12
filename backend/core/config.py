@@ -1,0 +1,54 @@
+"""
+Access Navigator AI - Configuration Management
+===============================================
+Centralized config for stadium navigation AI system.
+Supports multiple LLM providers, stadium configs, and feature flags.
+"""
+import os
+from typing import Optional
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    """Application settings with environment variable support."""
+
+    # API Keys
+    GROQ_API_KEY: str = os.environ.get("GROQ_API_KEY", "")
+    GEMINI_API_KEY: str = os.environ.get("GEMINI_API_KEY", "")
+    OPENAI_API_KEY: str = os.environ.get("OPENAI_API_KEY", "")
+
+    # LLM Configuration
+    PRIMARY_LLM: str = "groq"  # groq, gemini, openai
+    FALLBACK_LLM: str = "gemini"
+    LLM_TEMPERATURE: float = 0.1
+    LLM_MAX_TOKENS: int = 2048
+
+    # Model IDs
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    GROQ_FALLBACK_MODEL: str = "mixtral-8x7b-32768"
+    GEMINI_MODEL: str = "gemini-2.0-flash"
+    OPENAI_MODEL: str = "gpt-4o-mini"
+
+    # Server
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+    DEBUG: bool = False
+    CORS_ORIGINS: list = ["*"]
+
+    # Features
+    ENABLE_STREAMING: bool = True
+    ENABLE_VOICE_INPUT: bool = True
+    ENABLE_PREDICTIONS: bool = True
+    ENABLE_ANALYTICS: bool = True
+    ENABLE_CONVERSATIONAL_AI: bool = True
+
+    # Data Refresh
+    ZONE_REFRESH_INTERVAL_MS: int = 5000
+    PREDICTION_HORIZON_MINUTES: int = 30
+
+    class Config:
+        env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env")
+        case_sensitive = True
+
+
+settings = Settings()
