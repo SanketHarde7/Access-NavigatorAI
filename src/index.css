@@ -1,0 +1,425 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 3%;
+    --foreground: 210 40% 96%;
+    --card: 222 47% 6%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 187 94% 43%;
+    --primary-foreground: 222 47% 3%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 96%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 96%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 187 94% 43%;
+    --radius: 0.625rem;
+    --sidebar-background: 222 47% 4%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 187 94% 43%;
+    --sidebar-primary-foreground: 222 47% 3%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 187 94% 43%;
+
+    /* Stadium Theme Variables — Lighter, brighter colors for intense glow */
+    --theme-from: #3b82f6; /* Lighter blue */
+    --theme-to: #7dd3fc; /* Bright sky blue */
+    --theme-accent: #60a5fa;
+    --theme-glow: rgba(125, 211, 252, 0.4);
+    --theme-glow-strong: rgba(125, 211, 252, 0.8);
+    --theme-border: rgba(125, 211, 252, 0.2);
+    --theme-bg: rgba(59, 130, 246, 0.2);
+  }
+
+  /* MetLife Stadium — Bright Sky Blue */
+  [data-stadium="metlife"] {
+    --theme-from: #3b82f6;
+    --theme-to: #7dd3fc;
+    --theme-accent: #60a5fa;
+    --theme-glow: rgba(125, 211, 252, 0.4);
+    --theme-glow-strong: rgba(125, 211, 252, 0.8);
+    --theme-border: rgba(125, 211, 252, 0.2);
+    --theme-bg: rgba(59, 130, 246, 0.2);
+  }
+
+  /* SoFi Stadium — Neon Pink / Magenta */
+  [data-stadium="sofi"] {
+    --theme-from: #f43f5e;
+    --theme-to: #f472b6;
+    --theme-accent: #fb7185;
+    --theme-glow: rgba(244, 114, 182, 0.4);
+    --theme-glow-strong: rgba(244, 114, 182, 0.8);
+    --theme-border: rgba(244, 114, 182, 0.2);
+    --theme-bg: rgba(244, 63, 94, 0.2);
+  }
+
+  /* Estadio Azteca — Lime / Electric Yellow */
+  [data-stadium="azteca"] {
+    --theme-from: #22c55e;
+    --theme-to: #fef08a;
+    --theme-accent: #86efac;
+    --theme-glow: rgba(254, 240, 138, 0.4);
+    --theme-glow-strong: rgba(254, 240, 138, 0.8);
+    --theme-border: rgba(254, 240, 138, 0.2);
+    --theme-bg: rgba(34, 197, 94, 0.2);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
+}
+
+/* ========================================
+   VOLUMETRIC GLASS & LIGHT RAYS
+   ======================================== */
+
+/* Container for volumetric glow - creates a stacking context */
+.glass-card {
+  position: relative;
+  background: rgba(5, 8, 20, 0.3); /* Extremely transparent dark body */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15); /* Stronger top light reflection */
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  /* The physical depth shadow separating the glass from the backlight */
+  box-shadow: 
+    0 40px 80px -20px rgba(0, 0, 0, 0.9), 
+    0 20px 40px -10px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 20px rgba(255, 255, 255, 0.02);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+
+/* The actual light source emitting from BEHIND the card */
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: -15px; /* Bleed out from behind the card */
+  z-index: -1;
+  background: radial-gradient(circle at center, var(--theme-glow-strong) 0%, transparent 70%);
+  filter: blur(30px);
+  opacity: 0.5;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 
+    0 50px 100px -20px rgba(0, 0, 0, 1),
+    0 30px 60px -10px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-card:hover::before {
+  opacity: 0.9; /* Light intensifies when hovered */
+  transform: scale(1.05); /* Light spreads further */
+}
+
+/* Subtle glass — inner elements */
+.glass-subtle {
+  position: relative;
+  background: rgba(10, 15, 30, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 15px 35px -5px rgba(0, 0, 0, 0.6), /* physical drop */
+    inset 0 2px 10px rgba(255, 255, 255, 0.02); /* inner glass volume */
+  transition: all 0.3s ease;
+  z-index: 5;
+}
+
+.glass-subtle::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  background: var(--theme-glow);
+  filter: blur(15px);
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.glass-subtle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 45px -5px rgba(0, 0, 0, 0.7);
+}
+.glass-subtle:hover::before {
+  opacity: 0.6;
+}
+
+/* Header glass */
+.glass-header {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 30px 60px var(--theme-glow), 0 20px 40px -10px rgba(0,0,0,0.8);
+}
+
+/* Sidebar glass */
+.glass-sidebar {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 30px 0 60px var(--theme-glow), 20px 0 40px -10px rgba(0,0,0,0.8);
+}
+
+/* Input glass */
+.glass-input {
+  background: rgba(0, 0, 0, 0.5) !important; /* deep cavity */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.8) !important; /* dark inner top for depth */
+  box-shadow: inset 0 4px 12px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05) !important; /* deep inset + bottom rim light */
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus, .glass-input:focus-within {
+  border-color: rgba(255,255,255,0.1) !important;
+  box-shadow: inset 0 4px 12px rgba(0,0,0,0.8), 0 0 30px var(--theme-glow-strong) !important;
+}
+
+/* Dropdown glass */
+.glass-dropdown {
+  background: rgba(5, 8, 15, 0.8) !important;
+  backdrop-filter: blur(40px) !important;
+  -webkit-backdrop-filter: blur(40px) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  box-shadow: 0 50px 100px -10px rgba(0, 0, 0, 0.9), 0 0 80px var(--theme-glow-strong) !important;
+}
+
+/* Button with theme gradient */
+.btn-theme {
+  background: linear-gradient(135deg, var(--theme-from), var(--theme-to));
+  border: none;
+  box-shadow: 0 4px 15px var(--theme-glow-strong);
+  transition: all 0.3s ease;
+}
+
+.btn-theme:hover {
+  box-shadow: 0 6px 25px var(--theme-glow-strong);
+  filter: brightness(1.1);
+}
+
+/* Theme-colored border glow */
+.theme-border {
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 0 15px var(--theme-glow);
+}
+
+/* Theme gradient text */
+.theme-gradient-text {
+  background: linear-gradient(135deg, var(--theme-from), var(--theme-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Stat card with themed left accent */
+.glass-stat {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-stat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--theme-from), var(--theme-to));
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--theme-glow), 0 0 20px var(--theme-glow);
+  }
+  50% {
+    box-shadow: 0 0 10px var(--theme-glow-strong), 0 0 40px var(--theme-glow);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Line clamp */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Legacy glass (keep for backwards compat) */
+.glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--theme-from) 0%, var(--theme-to) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Grid background pattern */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Animated mesh gradient background with light rays */
+.bg-mesh {
+  background:
+    radial-gradient(ellipse at 20% 50%, var(--theme-bg) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, var(--theme-bg) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 80%, var(--theme-glow) 0%, transparent 60%),
+    repeating-conic-gradient(from 0deg at 50% 50%, 
+      transparent 0deg, 
+      var(--theme-bg) 10deg, 
+      transparent 20deg
+    );
+  background-size: 100% 100%, 100% 100%, 100% 100%, 200% 200%;
+  background-position: center;
+  animation: rotate-rays 60s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes rotate-rays {
+  from { background-position: center, center, center, 0% 0%; }
+  to { background-position: center, center, center, 100% 100%; }
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--theme-glow-strong);
+  color: white;
+}
