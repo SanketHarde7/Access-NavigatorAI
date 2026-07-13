@@ -71,7 +71,10 @@ export function RoutePlanner({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
-        <div className="p-2 rounded-lg glass-subtle" style={{ borderColor: "var(--theme-border)" }}>
+        <div
+          className="p-2 rounded-lg glass-3d-subtle"
+          style={{ borderColor: "var(--theme-border)", boxShadow: "0 0 12px var(--theme-glow)" }}
+        >
           <Navigation className="h-5 w-5" style={{ color: "var(--theme-accent)" }} />
         </div>
         <div>
@@ -84,10 +87,10 @@ export function RoutePlanner({
         <div>
           <label className="text-xs font-medium text-slate-400 mb-1.5 block">Accessibility Need</label>
           <Select value={need} onValueChange={setNeed}>
-            <SelectTrigger className="glass-input h-9 text-slate-200">
+            <SelectTrigger className="glass-3d-input h-9 text-slate-200 rounded-xl">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="glass-dropdown">
+            <SelectContent className="glass-3d-dropdown">
               <SelectItem value="wheelchair">Wheelchair / Mobility</SelectItem>
               <SelectItem value="hearing_impaired">Hearing Impaired</SelectItem>
               <SelectItem value="visual_impaired">Visual Impaired</SelectItem>
@@ -101,10 +104,10 @@ export function RoutePlanner({
             <MapPin className="h-3 w-3" /> Current Location
           </label>
           <Select value={selectedStart} onValueChange={onStartChange}>
-            <SelectTrigger className="glass-input h-9 text-slate-200">
+            <SelectTrigger className="glass-3d-input h-9 text-slate-200 rounded-xl">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="glass-dropdown max-h-60">
+            <SelectContent className="glass-3d-dropdown max-h-60">
               {zones.map((z) => (
                 <SelectItem key={z.zone_id} value={z.zone_id}>
                   <span className="capitalize">{z.zone_id.replace(/_/g, " ")}</span>
@@ -121,10 +124,10 @@ export function RoutePlanner({
           </label>
           <div className="flex gap-2">
             <Select value={selectedEnd} onValueChange={onEndChange}>
-              <SelectTrigger className="glass-input h-9 text-slate-200 flex-1">
+              <SelectTrigger className="glass-3d-input h-9 text-slate-200 flex-1 rounded-xl">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="glass-dropdown max-h-60">
+              <SelectContent className="glass-3d-dropdown max-h-60">
                 {zones.map((z) => (
                   <SelectItem key={z.zone_id} value={z.zone_id}>
                     <span className="capitalize">{z.zone_id.replace(/_/g, " ")}</span>
@@ -137,8 +140,8 @@ export function RoutePlanner({
               variant="outline"
               size="icon"
               onClick={startVoice}
-              className={`h-9 w-9 glass-subtle ${isRecording ? "text-red-400 animate-pulse" : "text-slate-400 hover:text-white"}`}
-              style={isRecording ? { borderColor: "#ef4444", boxShadow: "0 0 12px rgba(239,68,68,0.3)" } : undefined}
+              className={`h-9 w-9 glass-3d-subtle rounded-xl transition-transform active:scale-90 ${isRecording ? "text-red-400 animate-pulse" : "text-slate-400 hover:text-white"}`}
+              style={isRecording ? { borderColor: "#ef4444", boxShadow: "0 0 12px rgba(239,68,68,0.4)" } : undefined}
             >
               {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </Button>
@@ -148,7 +151,7 @@ export function RoutePlanner({
         <Button
           onClick={() => onCalculate(selectedStart, selectedEnd, need)}
           disabled={loading || !selectedStart || !selectedEnd}
-          className="w-full btn-theme text-white h-10 font-medium"
+          className="w-full btn-theme text-white h-10 font-medium rounded-xl"
         >
           {loading ? (
             <>
