@@ -73,7 +73,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white bg-mesh" data-stadium={stadiumId}>
+    <div
+      className="min-h-screen text-white bg-mesh relative"
+      data-stadium={stadiumId}
+    >
+      {/* Animated parallax orb layer (rendered as sibling so ::before/::after keep working) */}
+      <div className="bg-orb" aria-hidden />
+
       <Header
         connected={connected}
         stadiumName={stadiumName}
@@ -91,7 +97,7 @@ export default function App() {
       />
 
       <main
-        className={`transition-all duration-300 ${
+        className={`relative z-10 transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-0"
         }`}
       >
@@ -102,10 +108,13 @@ export default function App() {
         position="top-right"
         toastOptions={{
           style: {
-            background: "rgba(15, 23, 42, 0.8)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid var(--theme-border)",
+            background: "rgba(8, 12, 28, 0.75)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderTopColor: "rgba(255, 255, 255, 0.25)",
             color: "#e2e8f0",
+            boxShadow:
+              "0 30px 60px -10px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.2)",
           },
         }}
       />
