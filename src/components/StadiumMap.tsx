@@ -110,9 +110,12 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
 
   return (
     <div>
-      <div className="relative rounded-xl overflow-hidden glass-subtle" style={{ borderColor: "var(--theme-border)" }}>
+      <div
+        className="relative rounded-xl overflow-hidden glass-3d-subtle"
+        style={{ borderColor: "var(--theme-border)" }}
+      >
         {/* Grid background */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 opacity-10">
           <svg width="100%" height="100%">
             <defs>
               <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
@@ -123,13 +126,29 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
           </svg>
         </div>
 
-        <svg width={svgW} height={svgH} className="relative z-10">
-          {/* Stadium outline — themed ellipse */}
+        <svg width={svgW} height={svgH} className="relative z-10 max-w-full h-auto">
+          <defs>
+            <linearGradient id="zoneGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
+              <stop offset="40%" stopColor="rgba(255,255,255,0.05)" />
+              <stop offset="100%" stopColor="rgba(0,0,0,0.4)" />
+            </linearGradient>
+            <filter id="zoneShadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000" floodOpacity="0.5" />
+            </filter>
+            <filter id="zoneGlowFilter" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000" floodOpacity="0.5" />
+              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="var(--theme-accent)" floodOpacity="0.7" />
+            </filter>
+          </defs>
+
+          {/* Stadium outline — themed ellipse with depth */}
           <ellipse
             cx={svgW / 2} cy={svgH / 2}
             rx="320" ry="220"
-            fill="none" strokeWidth="2"
+            fill="url(#zoneGlow)" strokeWidth="2"
             style={{ stroke: "var(--theme-border)" }}
+            filter="url(#zoneShadow)"
           />
           <ellipse
             cx={svgW / 2} cy={svgH / 2}
@@ -148,7 +167,7 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
                 <path
                   key={`${fromId}-${toId}`}
                   d={drawConnection(from, to)}
-                  fill="none" stroke="rgba(148,163,184,0.1)" strokeWidth="1" strokeDasharray="4,4" opacity="0.5"
+                  fill="none" stroke="rgba(148,163,184,0.15)" strokeWidth="1" strokeDasharray="4,4" opacity="0.6"
                 />
               );
             })
@@ -160,7 +179,7 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
               d={routePath}
               fill="none" strokeWidth="4" strokeDasharray="8,4"
               className="animate-dash"
-              style={{ stroke: "var(--theme-accent)" }}
+              style={{ stroke: "var(--theme-accent)", filter: "drop-shadow(0 0 6px var(--theme-glow-strong))" }}
             />
           )}
 
@@ -168,7 +187,7 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
           {sortedZones.map((zone) => {
             const posRaw = coordinates[zone.zone_id];
             if (!posRaw) return null;
-            
+
             const pos = scaleCoord(posRaw);
             const px = pos.x;
             const py = pos.y;
@@ -182,54 +201,66 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
 
             const label = zone.zone_id.replace(/_/g, " ");
             const words = label.split(" ");
-            const w = 110;
-            const h = Math.max(40, words.length * 12 + 16);
+            const r = isRoute ? 12 : 8;
 
             return (
               <g
                 key={zone.zone_id}
                 onClick={() => onZoneClick?.(zone.zone_id)}
-                className="cursor-pointer hover:opacity-90 transition-opacity"
+                className="cursor-pointer transition-transform hover:scale-110"
+                style={{ transformOrigin: `${px}px ${py}px` }}
               >
-                <rect
-                  x={px - w / 2} y={py - h / 2}
-                  width={w} height={h}
-                  rx="12"
+                {/* Node circle */}
+                <circle
+                  cx={px} cy={py} r={r}
                   fill={fillColor}
                   stroke={strokeColor}
                   strokeWidth={strokeWidth}
-                  style={{ filter: isRoute ? `drop-shadow(0 0 6px var(--theme-glow))` : undefined }}
+                  filter={isRoute ? "url(#zoneGlowFilter)" : "drop-shadow(0 2px 4px rgba(0,0,0,0.5))"}
                 />
-                {isStart && (
-                  <circle cx={px - w / 2 + 8} cy={py - h / 2 + 8} r="5" fill="#10b981" />
-                )}
-                {isEnd && (
-                  <circle cx={px - w / 2 + 8} cy={py - h / 2 + 8} r="5" fill="#ef4444" />
-                )}
+                
+                {/* Start / End indicators */}
+                {isStart && <circle cx={px} cy={py} r={r - 3} fill="#10b981" />}
+                {isEnd && <circle cx={px} cy={py} r={r - 3} fill="#ef4444" />}
+
+                {/* Text Label Below Node */}
                 {words.map((word, i) => (
                   <text
                     key={i}
                     x={px}
-                    y={py - (words.length * 6) + (i * 12) + 4}
+                    y={py + r + 12 + (i * 10)}
                     textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="pointer-events-none select-none"
-                    style={{ fontSize: "10px", fontWeight: "600", fill: "#e2e8f0" }}
+                    className="pointer-events-none select-none capitalize"
+                    style={{ fontSize: "9px", fontWeight: "600", fill: "#f1f5f9", textShadow: "0 1px 3px rgba(0,0,0,0.9)" }}
                   >
                     {word}
                   </text>
                 ))}
+
+                {/* Crowd Density Pill */}
                 {zone.crowd_density_pct > 0 && (
-                  <text
-                    x={px}
-                    y={py + (words.length * 6) + 2}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="pointer-events-none select-none"
-                    style={{ fontSize: "9px", fill: strokeColor, fontWeight: "500" }}
-                  >
-                    {zone.crowd_density_pct}%
-                  </text>
+                  <g>
+                    <rect
+                      x={px - 14}
+                      y={py + r + 12 + (words.length * 10)}
+                      width="28"
+                      height="12"
+                      rx="4"
+                      fill="rgba(15, 23, 42, 0.8)"
+                      stroke={strokeColor}
+                      strokeWidth="0.5"
+                    />
+                    <text
+                      x={px}
+                      y={py + r + 18 + (words.length * 10)}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      className="pointer-events-none select-none"
+                      style={{ fontSize: "8px", fill: strokeColor, fontWeight: "700" }}
+                    >
+                      {zone.crowd_density_pct}%
+                    </text>
+                  </g>
                 )}
               </g>
             );
@@ -238,17 +269,20 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-3 text-xs text-slate-400">
+      <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-400">
         {[
           { color: "#10b981", label: "Operational" },
           { color: "#f59e0b", label: "Congested" },
           { color: "#ef4444", label: "Maintenance" },
           { label: "Active Route", useTheme: true },
         ].map((item) => (
-          <div key={item.label} className="flex items-center gap-1.5">
+          <div key={item.label} className="flex items-center gap-1.5 glass-pill px-2 py-1 rounded-full">
             <div
               className="w-2.5 h-2.5 rounded-sm"
-              style={{ background: item.useTheme ? "var(--theme-accent)" : item.color }}
+              style={{
+                background: item.useTheme ? "var(--theme-accent)" : item.color,
+                boxShadow: `0 0 6px ${item.useTheme ? "var(--theme-glow-strong)" : item.color}`,
+              }}
             />
             <span>{item.label}</span>
           </div>
