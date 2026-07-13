@@ -5,6 +5,7 @@ import { RouteResultCard } from "@/components/RouteResultCard";
 import { ZoneStatusGrid } from "@/components/ZoneStatusGrid";
 import { CaptionOverlay } from "@/components/CaptionOverlay";
 import { DemoControls } from "@/components/DemoControls";
+import { GlassCard } from "@/components/GlassCard";
 import { useZones } from "@/hooks/useZones";
 import { useRoute } from "@/hooks/useRoute";
 import { useCaption } from "@/hooks/useCaption";
@@ -58,26 +59,50 @@ export function Dashboard({ stadiumId }: DashboardProps) {
           { label: "Congested", value: zones.filter((z) => z.status === "congested").length, icon: <Radio className="h-4 w-4" />, iconColor: "#fbbf24" },
           { label: "Blocked", value: zones.filter((z) => z.status === "maintenance").length, icon: <Zap className="h-4 w-4" />, iconColor: "#f87171" },
         ].map((stat) => (
-          <div key={stat.label} className="glass-stat p-3 rounded-xl">
+          <GlassCard
+            key={stat.label}
+            variant="stat"
+            tilt
+            maxTilt={5}
+            className="p-3"
+          >
             <div className="flex items-center gap-2 mb-1">
-              <span style={{ color: stat.iconColor }}>{stat.icon}</span>
+              <span
+                className="p-1 rounded-md"
+                style={{
+                  background: `${stat.iconColor}22`,
+                  color: stat.iconColor,
+                  boxShadow: `0 0 8px ${stat.iconColor}66`,
+                }}
+              >
+                {stat.icon}
+              </span>
               <span className="text-[10px] text-slate-400 uppercase tracking-wider">{stat.label}</span>
             </div>
             <div className="text-2xl font-bold text-white">{stat.value}</div>
-          </div>
+          </GlassCard>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Map & Route */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="glass-card rounded-xl p-4">
+          <GlassCard tilt maxTilt={4} className="rounded-xl p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Map className="h-4 w-4" style={{ color: "var(--theme-accent)" }} />
+                <span
+                  className="p-1.5 rounded-lg"
+                  style={{
+                    background: "var(--theme-bg)",
+                    color: "var(--theme-accent)",
+                    boxShadow: "0 0 12px var(--theme-glow)",
+                  }}
+                >
+                  <Map className="h-4 w-4" />
+                </span>
                 Live Stadium Map
               </h2>
-              <span className="text-[10px] text-slate-500">
+              <span className="text-[10px] text-slate-500 glass-pill px-2 py-0.5 rounded-full">
                 Updated: {lastUpdated.toLocaleTimeString()}
               </span>
             </div>
@@ -89,14 +114,14 @@ export function Dashboard({ stadiumId }: DashboardProps) {
               selectedStart={selectedStart}
               selectedEnd={selectedEnd}
             />
-          </div>
+          </GlassCard>
 
           <RouteResultCard route={route} />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-4">
-          <div className="glass-card rounded-xl p-4">
+          <GlassCard tilt maxTilt={4} className="rounded-xl p-4">
             <RoutePlanner
               zones={zones}
               loading={routeLoading}
@@ -106,20 +131,29 @@ export function Dashboard({ stadiumId }: DashboardProps) {
               onStartChange={setSelectedStart}
               onEndChange={setSelectedEnd}
             />
-          </div>
+          </GlassCard>
 
           <DemoControls stadiumId={stadiumId} onScenarioTriggered={handleScenario} />
         </div>
       </div>
 
       {/* Zone Grid */}
-      <div className="glass-card rounded-xl p-4">
+      <GlassCard tilt={false} className="rounded-xl p-4">
         <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-          <Activity className="h-4 w-4" style={{ color: "var(--theme-accent)" }} />
+          <span
+            className="p-1.5 rounded-lg"
+            style={{
+              background: "var(--theme-bg)",
+              color: "var(--theme-accent)",
+              boxShadow: "0 0 12px var(--theme-glow)",
+            }}
+          >
+            <Activity className="h-4 w-4" />
+          </span>
           Zone Status
         </h2>
         <ZoneStatusGrid zones={zones} onZoneClick={handleZoneClick} />
-      </div>
+      </GlassCard>
 
       {/* Caption */}
       <CaptionOverlay caption={caption} onDismiss={clearCaption} />
