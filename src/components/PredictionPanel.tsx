@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Brain, Loader2, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { GlassCard } from "@/components/GlassCard";
 import type { PredictionData } from "@/hooks/usePredictions";
 
 interface PredictionPanelProps {
@@ -15,17 +16,20 @@ export function PredictionPanel({ predictions, loading, onPredict }: PredictionP
 
   if (loading) {
     return (
-      <div className="glass-card rounded-xl p-8 flex flex-col items-center justify-center gap-3">
+      <GlassCard tilt={false} className="rounded-xl p-8 flex flex-col items-center justify-center gap-3">
         <Loader2 className="h-8 w-8 text-violet-400 animate-spin" />
         <p className="text-sm text-slate-400">AI predicting crowd patterns...</p>
-      </div>
+      </GlassCard>
     );
   }
 
   if (!predictions) {
     return (
-      <div className="glass-card rounded-xl p-8 flex flex-col items-center justify-center gap-4">
-        <div className="p-3 rounded-xl glass-subtle">
+      <GlassCard tilt maxTilt={4} className="rounded-xl p-8 flex flex-col items-center justify-center gap-4">
+        <div
+          className="p-3 rounded-xl glass-3d-subtle animate-float"
+          style={{ boxShadow: "0 0 25px #a78bfa66" }}
+        >
           <Brain className="h-8 w-8 text-violet-400" />
         </div>
         <div className="text-center">
@@ -42,13 +46,13 @@ export function PredictionPanel({ predictions, loading, onPredict }: PredictionP
           <Slider value={[horizon]} onValueChange={(v) => setHorizon(v[0])} min={5} max={120} step={5} />
           <Button
             onClick={() => onPredict(horizon)}
-            className="w-full btn-theme"
+            className="w-full btn-theme rounded-xl"
           >
             <Sparkles className="h-4 w-4 mr-2" />
             Generate Predictions
           </Button>
         </div>
-      </div>
+      </GlassCard>
     );
   }
 
@@ -57,16 +61,21 @@ export function PredictionPanel({ predictions, loading, onPredict }: PredictionP
     predictions.overall_risk === "medium" ? "text-amber-400" : "text-emerald-400";
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden">
+    <GlassCard tilt maxTilt={3} className="rounded-xl overflow-hidden">
       <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Brain className="h-5 w-5 text-violet-400" />
+          <span
+            className="p-1.5 rounded-lg"
+            style={{ background: "#a78bfa22", color: "#a78bfa", boxShadow: "0 0 12px #a78bfa66" }}
+          >
+            <Brain className="h-4 w-4" />
+          </span>
           <div>
             <h3 className="text-sm font-semibold text-white">AI Predictions</h3>
             <p className="text-[10px] text-slate-400">via Predictive Agent</p>
           </div>
         </div>
-        <div className={`text-xs font-medium ${riskColor} capitalize`}>
+        <div className={`text-xs font-medium ${riskColor} capitalize glass-pill px-2 py-1 rounded-full`}>
           {predictions.overall_risk} Risk
         </div>
       </div>
@@ -74,30 +83,30 @@ export function PredictionPanel({ predictions, loading, onPredict }: PredictionP
       <div className="px-4 py-3">
         <p className="text-xs text-slate-300 mb-3">{predictions.summary}</p>
 
-        <div className="space-y-2 max-h-64 overflow-y-auto">
+        <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
           {predictions.predictions.map((p) => (
-            <div key={p.zone_id} className="flex items-center gap-3 p-2 rounded-lg glass-subtle">
+            <div key={p.zone_id} className="flex items-center gap-3 p-2 rounded-lg glass-3d-subtle">
               <span className="text-xs text-slate-300 capitalize w-28 truncate">{p.zone_id.replace(/_/g, " ")}</span>
               <div className="flex-1">
                 <div className="flex justify-between text-[10px] text-slate-400 mb-1">
                   <span>{p.predicted_density}% predicted</span>
                   <span className="capitalize">{p.trend_direction}</span>
                 </div>
-                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${
                       p.predicted_density > 85 ? "bg-red-500" :
                       p.predicted_density > 60 ? "bg-amber-500" : "bg-emerald-500"
                     }`}
-                    style={{ width: `${p.predicted_density}%` }}
+                    style={{ width: `${p.predicted_density}%`, boxShadow: "0 0 8px currentColor" }}
                   />
                 </div>
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                p.risk_level === "critical" ? "bg-red-950/40 text-red-400" :
-                p.risk_level === "high" ? "bg-orange-950/40 text-orange-400" :
-                p.risk_level === "medium" ? "bg-amber-950/40 text-amber-400" :
-                "bg-emerald-950/40 text-emerald-400"
+              <span className={`text-[10px] px-2 py-0.5 rounded-full glass-pill ${
+                p.risk_level === "critical" ? "text-red-400" :
+                p.risk_level === "high" ? "text-orange-400" :
+                p.risk_level === "medium" ? "text-amber-400" :
+                "text-emerald-400"
               }`}>
                 {p.risk_level}
               </span>
@@ -112,11 +121,11 @@ export function PredictionPanel({ predictions, loading, onPredict }: PredictionP
           variant="outline"
           size="sm"
           onClick={() => onPredict(horizon)}
-          className="h-7 text-xs glass-subtle hover:bg-white/10"
+          className="h-7 text-xs glass-3d-subtle hover:bg-white/10 transition-transform active:scale-95"
         >
           Refresh
         </Button>
       </div>
-    </div>
+    </GlassCard>
   );
 }
