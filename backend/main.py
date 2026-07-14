@@ -93,6 +93,11 @@ app.add_middleware(
 
 # ============== HEALTH ==============
 
+@app.get("/")
+async def root():
+    """Root endpoint for basic connectivity check."""
+    return {"status": "ok", "message": "Access Navigator API is running. Visit /docs for API documentation or /api/health for system status."}
+
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
     """Health check with feature flags."""
