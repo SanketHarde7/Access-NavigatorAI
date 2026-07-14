@@ -1,3 +1,10 @@
+/**
+ * Header Component
+ * ================
+ * Top navigation bar displaying the app branding, current stadium name,
+ * live/offline connection status, and sidebar toggle. Uses glassmorphic
+ * styling via the `glass-3d-header` CSS class.
+ */
 import {
   Brain,
   Menu,
@@ -9,10 +16,15 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
+  /** Whether the backend API is reachable */
   connected: boolean;
+  /** Human-readable stadium name to display */
   stadiumName: string;
+  /** Callback to toggle the sidebar open/closed */
   onMenuClick: () => void;
+  /** Whether the sidebar is currently open */
   sidebarOpen: boolean;
+  /** Current stadium ID (used for theme context) */
   stadiumId?: string;
 }
 

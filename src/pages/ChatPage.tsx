@@ -1,3 +1,11 @@
+/**
+ * ChatPage
+ * ========
+ * Full-screen conversational AI interface with an info sidebar
+ * showing feature capabilities and example questions. Users can
+ * ask natural language questions about stadium navigation, crowd
+ * conditions, and accessibility.
+ */
 import { AIChatPanel } from "@/components/AIChatPanel";
 import { GlassCard } from "@/components/GlassCard";
 import { useChat } from "@/hooks/useChat";

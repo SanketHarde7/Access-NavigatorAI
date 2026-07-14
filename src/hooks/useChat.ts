@@ -1,9 +1,23 @@
+/**
+ * useChat Hook
+ * ============
+ * Manages the conversational AI chat state including message history,
+ * streaming text, and abort/clear controls.
+ *
+ * Supports two modes:
+ * - Standard POST to /api/chat (default)
+ * - Streaming SSE via /api/chat/stream (when useStreaming=true)
+ *
+ * @returns messages, loading, streamingText, sendMessage, stopStreaming, clearChat
+ */
 import { useState, useCallback, useRef } from "react";
 import { API_ENDPOINTS } from "@/config/api";
 
+/** A single message in the chat conversation. */
 export interface ChatMessage {
   role: "user" | "assistant" | "agent";
   content: string;
+  /** Name of the AI agent that generated this message (optional) */
   agent_name?: string;
   timestamp?: string;
 }
@@ -14,6 +28,14 @@ export function useChat() {
   const [streamingText, setStreamingText] = useState("");
   const abortRef = useRef<AbortController | null>(null);
 
+  /**
+   * Send a message to the conversational AI.
+   *
+   * @param message           - User's text message
+   * @param stadiumId         - Current stadium context
+   * @param accessibilityNeed - User's accessibility requirement
+   * @param useStreaming       - Whether to use SSE streaming (default: false)
+   */
   const sendMessage = useCallback(
     async (
       message: string,
@@ -28,6 +50,7 @@ export function useChat() {
 
       try {
         if (useStreaming) {
+          // --- SSE streaming mode ---
           const controller = new AbortController();
           abortRef.current = controller;
 
@@ -71,13 +94,14 @@ export function useChat() {
                       setStreamingText("");
                     }
                   } catch {
-                    // skip invalid JSON
+                    // Skip malformed SSE JSON chunks
                   }
                 }
               }
             }
           }
         } else {
+          // --- Standard POST mode ---
           const res = await fetch(API_ENDPOINTS.chat, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -96,6 +120,7 @@ export function useChat() {
           ]);
         }
       } catch (err) {
+        // Don't show error message if user manually aborted
         if (err instanceof Error && err.name !== "AbortError") {
           setMessages((prev) => [
             ...prev,
@@ -113,6 +138,7 @@ export function useChat() {
     []
   );
 
+  /** Abort an in-progress streaming response and save partial text. */
   const stopStreaming = useCallback(() => {
     abortRef.current?.abort();
     setLoading(false);
@@ -125,6 +151,7 @@ export function useChat() {
     }
   }, [streamingText]);
 
+  /** Clear all messages and reset the chat. */
   const clearChat = useCallback(() => {
     setMessages([]);
     setStreamingText("");

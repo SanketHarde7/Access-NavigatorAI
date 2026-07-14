@@ -1,3 +1,15 @@
+/**
+ * Sidebar Component
+ * =================
+ * Fixed left sidebar providing:
+ * - Stadium selector (MetLife / SoFi / Azteca)
+ * - Page navigation (Dashboard / AI Assistant / Analytics)
+ * - AI Agent status indicators (Perception, Reasoning, Communication, Navigator)
+ * - System health status footer
+ *
+ * The sidebar uses glassmorphic styling and adapts accent colors
+ * to the currently selected stadium theme.
+ */
 import {
   Map,
   MessageSquare,
@@ -11,13 +23,19 @@ import {
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+/** Available pages in the application. */
 export type Page = "dashboard" | "navigator" | "chat" | "analytics" | "settings";
 
 interface SidebarProps {
+  /** Whether the sidebar is visible */
   open: boolean;
+  /** Currently active page */
   currentPage: Page;
+  /** Callback when user selects a different page */
   onPageChange: (page: Page) => void;
+  /** Currently selected stadium ID */
   stadiumId: string;
+  /** Callback when user selects a different stadium */
   onStadiumChange: (id: string) => void;
 }
 

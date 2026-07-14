@@ -1,17 +1,37 @@
+/**
+ * StadiumMap Component
+ * ====================
+ * Interactive SVG-based stadium visualization showing:
+ * - Zone nodes as colored circles (operational/congested/maintenance)
+ * - Connection lines between adjacent zones (from graph data)
+ * - Animated route path when a route is calculated
+ * - Click-to-select zones for route planning
+ * - Crowd density pills on each node
+ *
+ * Data is fetched from /api/coordinates and /api/graph endpoints.
+ * Zone positions are normalized (0–1) and scaled to SVG dimensions.
+ */
 import { useEffect, useState, useMemo } from "react";
 import { API_ENDPOINTS } from "@/config/api";
 import type { Zone } from "@/hooks/useZones";
 import type { RouteResult } from "@/hooks/useRoute";
 
 interface StadiumMapProps {
+  /** Array of zone objects with status and crowd data */
   zones: Zone[];
+  /** Calculated route result (null if no route) */
   route: RouteResult | null;
+  /** Current stadium ID for fetching coordinates/graph */
   stadiumId: string;
+  /** Callback when a zone node is clicked */
   onZoneClick?: (zoneId: string) => void;
+  /** Currently selected starting zone ID */
   selectedStart?: string;
+  /** Currently selected destination zone ID */
   selectedEnd?: string;
 }
 
+/** Normalized coordinate (0–1 range) for a zone on the map. */
 interface ZoneCoord {
   x: number;
   y: number;

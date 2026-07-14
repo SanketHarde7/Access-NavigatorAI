@@ -1,3 +1,10 @@
+/**
+ * Dashboard Page
+ * ==============
+ * Main page showing the live stadium map, stat cards (zones/operational/
+ * congested/blocked counts), route planner, demo scenario controls,
+ * and zone status grid. This is the primary view of the application.
+ */
 import { useState, useCallback } from "react";
 import { StadiumMap } from "@/components/StadiumMap";
 import { RoutePlanner } from "@/components/RoutePlanner";

@@ -1,6 +1,16 @@
+/**
+ * useAnalytics Hook
+ * =================
+ * Fetches AI-generated stadium analytics including crowd patterns,
+ * accessibility compliance scores, and LLM-powered recommendations.
+ *
+ * @param stadiumId - The stadium to fetch analytics for
+ * @returns analytics data, loading/error state, and fetchAnalytics trigger
+ */
 import { useState, useCallback } from "react";
 import { API_ENDPOINTS } from "@/config/api";
 
+/** Analytics data for a single zone. */
 export interface ZoneAnalytics {
   zone_id: string;
   avg_crowd_1h: number;
@@ -10,6 +20,7 @@ export interface ZoneAnalytics {
   accessibility_score: number;
 }
 
+/** Full analytics response from the /api/analytics endpoint. */
 export interface AnalyticsData {
   stadium_id: string;
   generated_at: string;
@@ -28,6 +39,7 @@ export function useAnalytics(stadiumId: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /** Trigger an analytics fetch from the backend. */
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     setError(null);

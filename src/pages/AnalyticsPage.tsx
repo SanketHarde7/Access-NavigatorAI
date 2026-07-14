@@ -1,3 +1,10 @@
+/**
+ * AnalyticsPage
+ * =============
+ * AI-powered analytics dashboard with crowd predictions and
+ * comprehensive stadium insights. Features a configurable prediction
+ * horizon slider (5–120 min) and on-demand analytics/prediction buttons.
+ */
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";

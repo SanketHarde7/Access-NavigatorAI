@@ -1,3 +1,15 @@
+/**
+ * App — Root Application Component
+ * =================================
+ * Sets up the main layout with:
+ * - Health check polling (10s interval) to monitor backend connectivity
+ * - Stadium selection state (drives theme colors via data-stadium attribute)
+ * - Page routing (Dashboard | Chat | Analytics)
+ * - Glassmorphic Sonner toast notifications
+ *
+ * The `data-stadium` attribute on the root div controls the CSS theme
+ * variables defined in index.css (MetLife=blue, SoFi=violet, Azteca=green).
+ */
 import { useState, useEffect, useCallback } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/Header";
@@ -8,32 +20,30 @@ import { AnalyticsPage } from "@/pages/AnalyticsPage";
 import { API_ENDPOINTS, DEFAULT_STADIUM } from "@/config/api";
 import { toast } from "sonner";
 
+/** Human-readable stadium names keyed by stadium ID. */
+const STADIUM_NAMES: Record<string, string> = {
+  metlife: "MetLife Stadium",
+  sofi: "SoFi Stadium",
+  azteca: "Estadio Azteca",
+};
+
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState<Page>("dashboard");
   const [stadiumId, setStadiumId] = useState(DEFAULT_STADIUM);
   const [connected, setConnected] = useState(false);
-  const [stadiumName, setStadiumName] = useState("MetLife Stadium");
 
-  // Health check
+  // Derived stadium name from the lookup table
+  const stadiumName = STADIUM_NAMES[stadiumId] || stadiumId;
+
+  // --- Backend health check polling ---
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const res = await fetch(API_ENDPOINTS.health, { signal: AbortSignal.timeout(5000) });
-        if (res.ok) {
-          setConnected(true);
-          const data = await res.json();
-          if (data.features) {
-            const enabled = Object.entries(data.features)
-              .filter(([, v]) => v)
-              .map(([k]) => k);
-            if (enabled.length > 0) {
-              // toast.success(`Features: ${enabled.join(", ")}`);
-            }
-          }
-        } else {
-          setConnected(false);
-        }
+        const res = await fetch(API_ENDPOINTS.health, {
+          signal: AbortSignal.timeout(5000),
+        });
+        setConnected(res.ok);
       } catch {
         setConnected(false);
       }
@@ -44,21 +54,13 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Update stadium name when stadium changes
-  useEffect(() => {
-    const names: Record<string, string> = {
-      metlife: "MetLife Stadium",
-      sofi: "SoFi Stadium",
-      azteca: "Estadio Azteca",
-    };
-    setStadiumName(names[stadiumId] || stadiumId);
-  }, [stadiumId]);
-
+  /** Handle stadium switch — updates theme and shows toast. */
   const handleStadiumChange = useCallback((id: string) => {
     setStadiumId(id);
-    toast.info(`Switched to ${id}`);
+    toast.info(`Switched to ${STADIUM_NAMES[id] || id}`);
   }, []);
 
+  /** Render the current page based on navigation state. */
   const renderPage = () => {
     switch (currentPage) {
       case "dashboard":
@@ -77,7 +79,7 @@ export default function App() {
       className="min-h-screen text-white bg-mesh relative"
       data-stadium={stadiumId}
     >
-      {/* Animated parallax orb layer (rendered as sibling so ::before/::after keep working) */}
+      {/* Animated parallax orb layer (sibling so ::before/::after keep working) */}
       <div className="bg-orb" aria-hidden />
 
       <Header
@@ -104,6 +106,7 @@ export default function App() {
         {renderPage()}
       </main>
 
+      {/* Toast notifications — glassmorphic styling */}
       <Toaster
         position="top-right"
         toastOptions={{

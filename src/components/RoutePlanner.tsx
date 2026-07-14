@@ -1,3 +1,13 @@
+/**
+ * RoutePlanner Component
+ * ======================
+ * Sidebar panel for configuring and triggering AI route calculations.
+ * Includes accessibility need selection, zone start/end dropdowns,
+ * voice input (Web Speech API), and the "Calculate Route" button.
+ *
+ * Voice input uses the browser's SpeechRecognition API to match
+ * spoken zone names and auto-fill the destination field.
+ */
 import { useState, useEffect } from "react";
 import { Navigation, Mic, MicOff, Sparkles, Loader2, MapPin, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";

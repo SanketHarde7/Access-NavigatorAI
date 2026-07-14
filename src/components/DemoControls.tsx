@@ -1,3 +1,10 @@
+/**
+ * DemoControls Component
+ * ======================
+ * Trigger panel for demo scenarios (Normal, Blocked, Halftime, Evacuation).
+ * Each scenario updates zone statuses on the backend to simulate
+ * real-world crowd conditions for presentation purposes.
+ */
 import { useState } from "react";
 import { FlaskConical, RotateCcw, AlertTriangle, Clock, DoorOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";

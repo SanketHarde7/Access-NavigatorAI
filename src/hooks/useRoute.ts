@@ -1,12 +1,22 @@
+/**
+ * useRoute Hook
+ * =============
+ * Handles AI-powered accessible route calculation via the multi-agent
+ * backend pipeline (Perception → Reasoning → Communication agents).
+ *
+ * @returns route result, loading/error state, calculateRoute, and clearRoute fns
+ */
 import { useState, useCallback } from "react";
 import { API_ENDPOINTS } from "@/config/api";
 
+/** A single segment in a calculated route. */
 export interface PathSegment {
   from_zone: string;
   to_zone: string;
   estimated_time_min: number;
 }
 
+/** Full route result returned by the /api/route endpoint. */
 export interface RouteResult {
   recommended_path: string[];
   path_segments: PathSegment[];
@@ -16,6 +26,7 @@ export interface RouteResult {
   confidence: string;
   accessibility_score: number;
   crowd_alerts: string[];
+  /** Trace data from the multi-agent pipeline (optional) */
   agent_trace?: {
     perception_summary: string;
     reasoning_note: string;
@@ -30,6 +41,15 @@ export function useRoute() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Calculate an accessible route between two zones.
+   *
+   * @param stadiumId        - Target stadium
+   * @param start            - Starting zone_id
+   * @param end              - Destination zone_id
+   * @param accessibilityNeed - User need (wheelchair, hearing_impaired, etc.)
+   * @param provider         - Optional LLM provider override
+   */
   const calculateRoute = useCallback(
     async (
       stadiumId: string,
@@ -59,8 +79,8 @@ export function useRoute() {
           }
         );
         if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.detail || "Route calculation failed");
+          const errBody = await res.json().catch(() => ({}));
+          throw new Error(errBody.detail || "Route calculation failed");
         }
         const data = await res.json();
         setRoute(data);
@@ -74,6 +94,7 @@ export function useRoute() {
     []
   );
 
+  /** Clear the current route and any errors. */
   const clearRoute = useCallback(() => {
     setRoute(null);
     setError(null);
