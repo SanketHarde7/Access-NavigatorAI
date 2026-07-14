@@ -24,14 +24,14 @@ class Settings(BaseSettings):
     LLM_MAX_TOKENS: int = 2048
 
     # Model IDs
-    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    GROQ_MODEL: str = "openai/gpt-oss-120b"
     GROQ_FALLBACK_MODEL: str = "mixtral-8x7b-32768"
     GEMINI_MODEL: str = "gemini-2.0-flash"
     OPENAI_MODEL: str = "gpt-4o-mini"
 
     # Server
     API_HOST: str = "0.0.0.0"
-    API_PORT: int = 8000
+    API_PORT: int = int(os.environ.get("PORT", 8000))
     DEBUG: bool = False
     CORS_ORIGINS: list = ["*"]
 

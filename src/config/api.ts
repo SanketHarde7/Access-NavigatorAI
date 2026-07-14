@@ -9,7 +9,12 @@
  *   VITE_API_URL — Override the default backend URL (default: http://localhost:8000)
  */
 
-/** Base URL for all API requests. Falls back to localhost for development. */
+/** 
+ * Base URL for all API requests. Falls back to localhost for development.
+ * Note: Render free tier sleeps after 15 mins of inactivity. 
+ * The first request after sleep can take 30-60s. This is expected behavior.
+ * A keep-alive cron job (hitting /api/health) is used to minimize this.
+ */
 export const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 /**

@@ -76,11 +76,19 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=[
+        "https://<PASTE_YOUR_VERCEL_URL_HERE>",
+        "https://<PASTE_YOUR_VERCEL_URL_HERE>/",
+        "http://<PASTE_YOUR_VERCEL_URL_HERE>",
+        "http://<PASTE_YOUR_VERCEL_URL_HERE>/"
+    ],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Note: Render free tier sleeps after 15 mins of inactivity. 
+# The first request after sleep can take 30-60s. This is expected behavior.
+# A keep-alive cron job (hitting /api/health) is used to minimize this.
 
 
 # ============== HEALTH ==============
