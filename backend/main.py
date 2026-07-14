@@ -27,9 +27,13 @@ from contextlib import asynccontextmanager
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from fastapi import FastAPI, HTTPException, Query, File, UploadFile, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Query, File, UploadFile, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
+
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from core.config import settings
 from core.database import db, StadiumDatabase
@@ -72,6 +76,11 @@ app = FastAPI(
     version="2.0.0",
     lifespan=lifespan,
 )
+
+# Rate Limiter Configuration
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS
 app.add_middleware(
@@ -414,7 +423,8 @@ async def quick_caption(
 # ============== CONVERSATIONAL AI ==============
 
 @app.post("/api/chat")
-async def chat(request: ChatRequest):
+@limiter.limit("4/minute")
+async def chat(request: Request, body: ChatRequest):
     """
     Conversational AI interface - natural language stadium assistance.
     
@@ -428,18 +438,19 @@ async def chat(request: ChatRequest):
         raise HTTPException(status_code=503, detail="Conversational AI is disabled")
 
     result = await ConversationalAgent.chat(
-        message=request.message,
-        user_id=request.user_id,
-        stadium_id=request.stadium_id or "metlife",
-        accessibility_need=request.accessibility_need.value if request.accessibility_need else "wheelchair",
-        conversation_history=[m.model_dump() for m in (request.conversation_history or [])],
+        message=body.message,
+        user_id=body.user_id,
+        stadium_id=body.stadium_id or "metlife",
+        accessibility_need=body.accessibility_need.value if body.accessibility_need else "wheelchair",
+        conversation_history=[m.model_dump() for m in (body.conversation_history or [])],
     )
 
     return ChatResponse(**result)
 
 
 @app.post("/api/chat/stream")
-async def chat_stream(request: ChatRequest):
+@limiter.limit("4/minute")
+async def chat_stream(request: Request, body: ChatRequest):
     """
     Streaming conversational AI for real-time responses.
     
@@ -451,11 +462,11 @@ async def chat_stream(request: ChatRequest):
 
     async def event_generator():
         async for token in ConversationalAgent.chat_stream(
-            message=request.message,
-            user_id=request.user_id,
-            stadium_id=request.stadium_id or "metlife",
-            accessibility_need=request.accessibility_need.value if request.accessibility_need else "wheelchair",
-            conversation_history=[m.model_dump() for m in (request.conversation_history or [])],
+            message=body.message,
+            user_id=body.user_id,
+            stadium_id=body.stadium_id or "metlife",
+            accessibility_need=body.accessibility_need.value if body.accessibility_need else "wheelchair",
+            conversation_history=[m.model_dump() for m in (body.conversation_history or [])],
         ):
             yield f"data: {json.dumps({'token': token})}\n\n"
         yield f"data: {json.dumps({'done': True})}\n\n"
