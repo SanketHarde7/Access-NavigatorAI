@@ -77,10 +77,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://<PASTE_YOUR_VERCEL_URL_HERE>",
-        "https://<PASTE_YOUR_VERCEL_URL_HERE>/",
-        "http://<PASTE_YOUR_VERCEL_URL_HERE>",
-        "http://<PASTE_YOUR_VERCEL_URL_HERE>/"
+        "https://access-navigator-ai.vercel.app",
+        "https://access-navigator-ai.vercel.app/",
+        "http://access-navigator-ai.vercel.app",
+        "http://access-navigator-ai.vercel.app/"
     ],
     allow_credentials=False,
     allow_methods=["*"],
