@@ -1,3 +1,4 @@
+from __future__ import annotations
 import asyncio
 import json
 import sys
@@ -34,12 +35,17 @@ async def _asgi_request(method: str, path: str, payload: dict | None = None, que
         if not sent_body:
             sent_body = True
             return {"type": "http.request", "body": body, "more_body": False}
+        await asyncio.sleep(10)
         return {"type": "http.disconnect"}
 
     async def send(message):
         messages.append(message)
 
-    await app(scope, receive, send)
+    try:
+        await asyncio.wait_for(app(scope, receive, send), timeout=2.0)
+    except asyncio.TimeoutError:
+        pass
+
     status = next(m["status"] for m in messages if m["type"] == "http.response.start")
     response_body = b"".join(m.get("body", b"") for m in messages if m["type"] == "http.response.body")
     return status, json.loads(response_body.decode("utf-8")) if response_body else {}
@@ -59,6 +65,7 @@ def test_prompt_injection_middleware():
     }
     status, data = request("POST", "/api/chat", payload)
 
+    print("CHAT RESPONSE:", data)
     assert status == 403
     assert "Safety Violation" in data["error"]
 
@@ -67,6 +74,7 @@ def test_normal_health_request_still_works():
     """Security guardrails must not block normal read-only operational telemetry."""
     status, data = request("GET", "/api/health")
 
+    print("HEALTH RESPONSE:", data)
     assert status == 200
     assert data["status"] == "ok"
     assert data["features"]["streaming"] is True

@@ -6,7 +6,7 @@ Supports multiple LLM providers, stadium configs, and feature flags.
 """
 import os
 from typing import Optional
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -25,7 +25,7 @@ class Settings(BaseSettings):
 
     # Model IDs
     GROQ_MODEL: str = "openai/gpt-oss-120b"
-    GROQ_FALLBACK_MODEL: str = "mixtral-8x7b-32768"
+    GROQ_FALLBACK_MODEL: str = "openai/gpt-oss-20b"
     GEMINI_MODEL: str = "gemini-2.0-flash"
     OPENAI_MODEL: str = "gpt-4o-mini"
 
@@ -46,9 +46,10 @@ class Settings(BaseSettings):
     ZONE_REFRESH_INTERVAL_MS: int = 5000
     PREDICTION_HORIZON_MINUTES: int = 30
 
-    class Config:
-        env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env")
-        case_sensitive = True
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env"),
+        case_sensitive=True,
+    )
 
 
 settings = Settings()

@@ -49,6 +49,8 @@ class GroqProvider(LLMProvider):
         }
 
         if json_mode:
+            system_prompt += "\nOutput in JSON format."
+            payload["messages"][0]["content"] = system_prompt
             payload["response_format"] = {"type": "json_object"}
 
         async with aiohttp.ClientSession() as session:
