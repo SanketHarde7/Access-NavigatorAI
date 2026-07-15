@@ -22,6 +22,7 @@ This solution is explicitly designed to tackle the **"Smart, Dynamic Assistant"*
 - **Logical Decision Making** - Chain-of-Thought (CoT) reasoning for optimal context-aware routes.
 - **Smart Dynamic Assistant** - Natural language ReAct interface with real-time SSE streaming.
 - **Predictive Analytics** - LLM-powered crowd forecasting for safe navigation.
+- **Overcoming Language Barriers** - Native Gemini Multimodal translation handles multi-lingual voice input seamlessly.
 - **Practical Usability** - High-contrast UI, voice input, and live caption processing.
 
 ---
@@ -32,7 +33,7 @@ The system employs four specialized agents working in a decentralized pipeline, 
 
 ```mermaid
 graph TD
-    User([User App / Voice]) -->|Natural Language| CA[ConversationalAgent]
+    User([User App / Multi-Lingual Voice]) -->|Gemini Multimodal Translation| CA[ConversationalAgent]
     CA -->|1. Detects Intent| RA[ReasoningAgent]
     CA -->|2. Orchestrates| PA[PerceptionAgent]
     PA -.->|Reads Live State| DB[(Stadium DB / Graph)]
@@ -77,9 +78,10 @@ By pre-filtering the stadium graph using a cached Dijkstra algorithm before pass
 
 ## 💻 Tech Stack
 
+- **Primary AI Engine**: **Google Anti-Gravity IDE & Google AI Studio**
+- **LLM Models**: **Gemini 1.5 Pro / Flash** (Primary model for complex reasoning, multi-lingual translation, and logic), Groq (Fallback / Speed optimization layer).
 - **Backend**: FastAPI, Python 3.11, Pydantic, SlowAPI (Rate Limiting).
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Vite.
-- **AI/ML**: Groq (Llama-3), Gemini (Fallback), ReAct Pattern, Chain-of-Thought.
 
 ## 🚀 Quick Start
 
