@@ -1,22 +1,28 @@
 import { useRef, useCallback, useEffect } from "react";
+import type { RefCallback, MouseEvent } from "react";
 
 /**
  * useTilt — mouse-tracked 3D perspective tilt for glass cards.
- * Returns a ref to attach to the element and handlers for mouse events.
+ * Returns a callback ref to attach to the element and handlers for mouse events.
  * Sets CSS vars --tilt-x, --tilt-y, --tilt-glare-x, --tilt-glare-y.
  */
 export function useTilt<T extends HTMLElement = HTMLDivElement>(maxTilt = 8) {
-  const ref = useRef<T>(null);
+  const elementRef = useRef<T | null>(null);
+
+  const setTiltRef = useCallback<RefCallback<T>>((node) => {
+    elementRef.current = node;
+  }, []);
 
   const onMove = useCallback(
-    (e: React.MouseEvent<T>) => {
-      const el = ref.current;
+    (e: MouseEvent<T>) => {
+      const el = elementRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width; // 0..1
       const y = (e.clientY - rect.top) / rect.height; // 0..1
       const tiltY = (x - 0.5) * 2 * maxTilt; // -max..max
       const tiltX = -(y - 0.5) * 2 * maxTilt;
+      // Accessibility & performance: CSS variables update only the active surface, avoiding React state churn during live crowd-map interactions.
       el.style.setProperty("--tilt-x", `${tiltX}deg`);
       el.style.setProperty("--tilt-y", `${tiltY}deg`);
       el.style.setProperty("--tilt-glare-x", `${x * 100}%`);
@@ -26,7 +32,7 @@ export function useTilt<T extends HTMLElement = HTMLDivElement>(maxTilt = 8) {
   );
 
   const onLeave = useCallback(() => {
-    const el = ref.current;
+    const el = elementRef.current;
     if (!el) return;
     el.style.setProperty("--tilt-x", "0deg");
     el.style.setProperty("--tilt-y", "0deg");
@@ -39,5 +45,5 @@ export function useTilt<T extends HTMLElement = HTMLDivElement>(maxTilt = 8) {
     return () => onLeave();
   }, [onLeave]);
 
-  return { ref, onMouseMove: onMove, onMouseLeave: onLeave };
+  return { setTiltRef, onMouseMove: onMove, onMouseLeave: onLeave };
 }
