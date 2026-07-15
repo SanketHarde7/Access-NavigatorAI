@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Access Navigator AI - Multi-Provider LLM Service
 ================================================

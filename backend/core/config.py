@@ -6,7 +6,7 @@ Supports multiple LLM providers, stadium configs, and feature flags.
 """
 import os
 from typing import Optional
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def _csv_env(name: str, default: str) -> list[str]:
