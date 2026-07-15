@@ -48,12 +48,12 @@ interface ZoneTileProps {
 }
 
 function ZoneTile({ zone, onClick, getStatusIcon, getTrendIcon }: ZoneTileProps) {
-  const tilt = useTilt<HTMLButtonElement>(6);
+  const { setTiltRef, onMouseMove, onMouseLeave } = useTilt<HTMLButtonElement>(6);
   return (
     <button
-      ref={tilt.ref as React.RefObject<HTMLButtonElement>}
-      onMouseMove={tilt.onMouseMove as (e: React.MouseEvent<HTMLButtonElement>) => void}
-      onMouseLeave={tilt.onMouseLeave}
+      ref={setTiltRef}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       onClick={onClick}
       className="glass-3d-subtle glass-tilt text-left p-3 rounded-xl transition-all hover:border-white/20"
     >

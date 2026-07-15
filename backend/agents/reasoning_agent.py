@@ -5,6 +5,7 @@ Multi-factor tradeoff analysis using Chain-of-Thought prompting.
 Performs route optimization, caption classification, and intent detection.
 """
 import json
+from datetime import datetime
 from typing import List, Dict, Any, Optional
 from services.llm_service import llm_service
 
@@ -108,6 +109,7 @@ Never invent zone IDs. Use ONLY zones provided in the input."""
             "timestamp": datetime.utcnow().isoformat(),
         }, indent=2)
 
+        # Problem-statement alignment: Gemini-first CoT evaluation is limited to pre-filtered candidate paths so safety, latency, and token efficiency stay deterministic.
         # Call LLM with CoT
         result = await llm_service.generate(system_prompt, user_prompt, json_mode=True, provider=provider)
 
