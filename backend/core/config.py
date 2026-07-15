@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = os.environ.get("OPENAI_API_KEY", "")
 
     # LLM Configuration
-    PRIMARY_LLM: str = "groq"  # groq, gemini, openai
-    FALLBACK_LLM: str = "gemini"
+    PRIMARY_LLM: str = "gemini"  # groq, gemini, openai
+    FALLBACK_LLM: str = "groq"
     LLM_TEMPERATURE: float = 0.1
     LLM_MAX_TOKENS: int = 2048
 
