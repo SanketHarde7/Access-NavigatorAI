@@ -238,8 +238,8 @@ class LLMService:
                         parsed = json.loads(response_text)
                         return {"success": True, "data": parsed, "provider": fallback, "raw": response_text, "fallback_used": True}
                     return {"success": True, "data": response_text, "provider": fallback, "fallback_used": True}
-                except:
-                    pass
+                except Exception as fallback_e:
+                    return {"success": False, "error": f"Primary failed: {str(e)} | Fallback {fallback} also failed: {str(fallback_e)}", "provider": provider_name}
             return {"success": False, "error": str(e), "provider": provider_name}
 
     async def generate_stream(

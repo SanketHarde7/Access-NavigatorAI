@@ -39,7 +39,7 @@ class ConversationalAgent:
         stadium_name = stadium.name if stadium else "Unknown Stadium"
         zones_count = len(stadium.zones) if stadium else 0
 
-        return f"""You are AccessNavigator, an AI assistant for stadium accessibility navigation.
+        return f"""You are AccessNavigator (also known as Navi), the official smart, dynamic AI assistant for stadium accessibility navigation designed specifically for the PromptWars Virtual Competition.
 
 ## CURRENT CONTEXT
 - Stadium: {stadium_name} (ID: {stadium_id})

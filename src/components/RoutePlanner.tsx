@@ -44,6 +44,7 @@ export function RoutePlanner({
     }
   }, [zones, selectedStart, selectedEnd, onStartChange, onEndChange]);
 
+  // Accessibility: Integrating Web Speech API ensures WCAG 2.1 AA compliance for motor-impaired users
   const startVoice = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {

@@ -25,6 +25,7 @@ class ZoneStatusEnum(str, Enum):
     congested = "congested"
     maintenance = "maintenance"
     closed = "closed"
+    emergency = "emergency"
 
 
 class AccessibilityNeed(str, Enum):
