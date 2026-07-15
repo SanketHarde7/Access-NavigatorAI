@@ -4,15 +4,42 @@ Access Navigator AI - Multi-Provider LLM Service
 Supports Groq, Gemini, and OpenAI with streaming,
 automatic fallback, and structured JSON output.
 """
-import os
 import json
-import asyncio
-from typing import AsyncGenerator, Optional, Dict, Any, List
+import logging
+from typing import AsyncGenerator, Optional, Dict, Any
+
+import aiohttp
+
 from core.config import settings
+
+logger = logging.getLogger("access_navigator.llm")
+
+
+class LLMProviderError(Exception):
+    """Base provider error with safe, non-secret diagnostic context."""
+
+    def __init__(self, provider: str, message: str, status_code: int | None = None):
+        super().__init__(message)
+        self.provider = provider
+        self.status_code = status_code
+
+
+class LLMRateLimitError(LLMProviderError):
+    """Raised when a provider rejects traffic because of quota/rate limits."""
+
+
+class LLMAuthenticationError(LLMProviderError):
+    """Raised when a provider key is missing, invalid, or unauthorized."""
+
+
+class LLMResponseError(LLMProviderError):
+    """Raised when a provider response is malformed or missing required fields."""
 
 
 class LLMProvider:
     """Abstract LLM provider interface."""
+
+    name = "unknown"
 
     async def generate(self, system_prompt: str, user_prompt: str, json_mode: bool = True) -> str:
         raise NotImplementedError
@@ -21,8 +48,29 @@ class LLMProvider:
         raise NotImplementedError
 
 
+def _sanitize_error_text(text: str, limit: int = 500) -> str:
+    """Keep logs actionable while avoiding accidental API-key or prompt leakage."""
+    sanitized = text
+    for secret in (settings.GROQ_API_KEY, settings.GEMINI_API_KEY):
+        if secret:
+            sanitized = sanitized.replace(secret, "[redacted]")
+    return sanitized[:limit]
+
+
+def _provider_error(provider: str, status: int, body: str) -> LLMProviderError:
+    safe_body = _sanitize_error_text(body)
+    message = f"{provider} API returned HTTP {status}: {safe_body}"
+    if status == 429:
+        return LLMRateLimitError(provider, message, status)
+    if status in {401, 403}:
+        return LLMAuthenticationError(provider, message, status)
+    return LLMProviderError(provider, message, status)
+
+
 class GroqProvider(LLMProvider):
     """Groq LLM provider with ultra-fast inference."""
+
+    name = "groq"
 
     def __init__(self, api_key: str):
         self.api_key = api_key
@@ -30,15 +78,23 @@ class GroqProvider(LLMProvider):
         self.fallback_model = settings.GROQ_FALLBACK_MODEL
         self.base_url = "https://api.groq.com/openai/v1"
 
-    async def generate(self, system_prompt: str, user_prompt: str, json_mode: bool = True) -> str:
-        import aiohttp
+    async def _post_completion(self, session: aiohttp.ClientSession, headers: dict[str, str], payload: dict[str, Any]) -> str:
+        async with session.post(f"{self.base_url}/chat/completions", headers=headers, json=payload) as resp:
+            if resp.status != 200:
+                raise _provider_error(self.name, resp.status, await resp.text())
+            data = await resp.json()
+        try:
+            return data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise LLMResponseError(self.name, "Groq response missing choices[0].message.content") from exc
 
+    async def generate(self, system_prompt: str, user_prompt: str, json_mode: bool = True) -> str:
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
 
-        payload = {
+        payload: dict[str, Any] = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system_prompt},
@@ -53,28 +109,21 @@ class GroqProvider(LLMProvider):
             payload["messages"][0]["content"] = system_prompt
             payload["response_format"] = {"type": "json_object"}
 
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(f"{self.base_url}/chat/completions", headers=headers, json=payload) as resp:
-                    if resp.status != 200:
-                        error_text = await resp.text()
-                        print(f"Groq primary model error: {error_text}")
-                        # Fallback model
-                        payload["model"] = self.fallback_model
-                        async with session.post(f"{self.base_url}/chat/completions", headers=headers, json=payload) as resp2:
-                            if resp2.status != 200:
-                                raise Exception(f"Groq fallback also failed: {await resp2.text()}")
-                            data = await resp2.json()
-                            return data["choices"][0]["message"]["content"]
-                    data = await resp.json()
-                    return data["choices"][0]["message"]["content"]
-            except Exception as e:
-                print(f"Groq error: {e}")
-                raise
+        timeout = aiohttp.ClientTimeout(total=30)
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                try:
+                    return await self._post_completion(session, headers, payload)
+                except LLMRateLimitError:
+                    # Fallback precision: only same-provider rate limits switch to the smaller Groq fallback model before service-level fallback runs.
+                    logger.warning("Groq primary model rate-limited; retrying fallback model", extra={"provider": self.name, "model": self.model})
+                    payload["model"] = self.fallback_model
+                    return await self._post_completion(session, headers, payload)
+        except (aiohttp.ClientError, TimeoutError) as exc:
+            logger.warning("Groq transport failure", extra={"provider": self.name, "error_type": type(exc).__name__})
+            raise LLMProviderError(self.name, f"Groq transport failure: {type(exc).__name__}") from exc
 
     async def generate_stream(self, system_prompt: str, user_prompt: str) -> AsyncGenerator[str, None]:
-        import aiohttp
-
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -91,38 +140,40 @@ class GroqProvider(LLMProvider):
             "stream": True,
         }
 
-        async with aiohttp.ClientSession() as session:
-            try:
+        timeout = aiohttp.ClientTimeout(total=60)
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
                 async with session.post(f"{self.base_url}/chat/completions", headers=headers, json=payload) as resp:
+                    if resp.status != 200:
+                        raise _provider_error(self.name, resp.status, await resp.text())
                     async for line in resp.content:
-                        line = line.decode("utf-8").strip()
-                        if line.startswith("data: ") and line != "data: [DONE]":
+                        line_text = line.decode("utf-8").strip()
+                        if line_text.startswith("data: ") and line_text != "data: [DONE]":
                             try:
-                                chunk = json.loads(line[6:])
+                                chunk = json.loads(line_text[6:])
                                 delta = chunk["choices"][0]["delta"].get("content", "")
-                                if delta:
-                                    yield delta
-                            except:
+                            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
+                                logger.debug("Skipped malformed Groq stream chunk", extra={"provider": self.name, "error_type": type(exc).__name__})
                                 continue
-            except Exception as e:
-                print(f"Groq streaming error: {e}")
-                yield f"[Error: {str(e)}]"
+                            if delta:
+                                yield delta
+        except (LLMProviderError, aiohttp.ClientError, TimeoutError) as exc:
+            logger.warning("Groq streaming degraded", extra={"provider": self.name, "error_type": type(exc).__name__})
+            yield f"[LLM stream unavailable: {type(exc).__name__}]"
 
 
 class GeminiProvider(LLMProvider):
     """Google Gemini provider."""
+
+    name = "gemini"
 
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.model = settings.GEMINI_MODEL
 
     async def generate(self, system_prompt: str, user_prompt: str, json_mode: bool = True) -> str:
-        import aiohttp
-
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
-
         headers = {"Content-Type": "application/json"}
-
         payload = {
             "system_instruction": {"parts": [{"text": system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
@@ -133,21 +184,23 @@ class GeminiProvider(LLMProvider):
             },
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, json=payload) as resp:
-                if resp.status != 200:
-                    error_text = await resp.text()
-                    raise Exception(f"Gemini error: {error_text}")
-                data = await resp.json()
-                return data["candidates"][0]["content"]["parts"][0]["text"]
+        timeout = aiohttp.ClientTimeout(total=30)
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(url, headers=headers, json=payload) as resp:
+                    if resp.status != 200:
+                        raise _provider_error(self.name, resp.status, await resp.text())
+                    data = await resp.json()
+            return data["candidates"][0]["content"]["parts"][0]["text"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise LLMResponseError(self.name, "Gemini response missing candidates[0].content.parts[0].text") from exc
+        except (aiohttp.ClientError, TimeoutError) as exc:
+            logger.warning("Gemini transport failure", extra={"provider": self.name, "error_type": type(exc).__name__})
+            raise LLMProviderError(self.name, f"Gemini transport failure: {type(exc).__name__}") from exc
 
     async def generate_stream(self, system_prompt: str, user_prompt: str) -> AsyncGenerator[str, None]:
-        import aiohttp
-
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:streamGenerateContent?alt=sse&key={self.api_key}"
-
         headers = {"Content-Type": "application/json"}
-
         payload = {
             "system_instruction": {"parts": [{"text": system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
@@ -157,18 +210,26 @@ class GeminiProvider(LLMProvider):
             },
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, json=payload) as resp:
-                async for line in resp.content:
-                    line = line.decode("utf-8").strip()
-                    if line.startswith("data: ") and line != "data: [DONE]":
-                        try:
-                            chunk = json.loads(line[6:])
-                            text = chunk["candidates"][0]["content"]["parts"][0].get("text", "")
+        timeout = aiohttp.ClientTimeout(total=60)
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(url, headers=headers, json=payload) as resp:
+                    if resp.status != 200:
+                        raise _provider_error(self.name, resp.status, await resp.text())
+                    async for line in resp.content:
+                        line_text = line.decode("utf-8").strip()
+                        if line_text.startswith("data: ") and line_text != "data: [DONE]":
+                            try:
+                                chunk = json.loads(line_text[6:])
+                                text = chunk["candidates"][0]["content"]["parts"][0].get("text", "")
+                            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
+                                logger.debug("Skipped malformed Gemini stream chunk", extra={"provider": self.name, "error_type": type(exc).__name__})
+                                continue
                             if text:
                                 yield text
-                        except:
-                            continue
+        except (LLMProviderError, aiohttp.ClientError, TimeoutError) as exc:
+            logger.warning("Gemini streaming degraded", extra={"provider": self.name, "error_type": type(exc).__name__})
+            yield f"[LLM stream unavailable: {type(exc).__name__}]"
 
 
 class LLMService:
@@ -190,14 +251,27 @@ class LLMService:
     def get_available_providers(self) -> Dict[str, bool]:
         return {name: True for name in self.providers}
 
-    def _get_provider(self, preferred: Optional[str] = None) -> LLMProvider:
+    def _get_provider_entry(self, preferred: Optional[str] = None) -> tuple[str, LLMProvider]:
         if preferred and preferred in self.providers:
-            return self.providers[preferred]
+            return preferred, self.providers[preferred]
         if settings.PRIMARY_LLM in self.providers:
-            return self.providers[settings.PRIMARY_LLM]
+            return settings.PRIMARY_LLM, self.providers[settings.PRIMARY_LLM]
         if self.providers:
-            return list(self.providers.values())[0]
-        raise Exception("No LLM provider configured. Set GROQ_API_KEY or GEMINI_API_KEY.")
+            name = next(iter(self.providers))
+            return name, self.providers[name]
+        raise LLMProviderError("none", "No LLM provider configured. Set GROQ_API_KEY or GEMINI_API_KEY.")
+
+    @staticmethod
+    def _parse_json_response(response_text: str, provider_name: str) -> Dict[str, Any]:
+        try:
+            return json.loads(response_text)
+        except json.JSONDecodeError:
+            try:
+                start = response_text.index("{")
+                end = response_text.rindex("}") + 1
+                return json.loads(response_text[start:end])
+            except (ValueError, json.JSONDecodeError) as exc:
+                raise LLMResponseError(provider_name, "JSON parse failed for provider response") from exc
 
     async def generate(
         self,
@@ -207,42 +281,30 @@ class LLMService:
         provider: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Generate structured response with automatic fallback."""
-        llm = self._get_provider(provider)
         provider_name = provider or settings.PRIMARY_LLM
-
         try:
+            provider_name, llm = self._get_provider_entry(provider)
             response_text = await llm.generate(system_prompt, user_prompt, json_mode)
-
-            if json_mode:
-                try:
-                    parsed = json.loads(response_text)
-                    return {"success": True, "data": parsed, "provider": provider_name, "raw": response_text}
-                except json.JSONDecodeError:
-                    # Try to extract JSON from text
-                    try:
-                        start = response_text.index("{")
-                        end = response_text.rindex("}") + 1
-                        parsed = json.loads(response_text[start:end])
-                        return {"success": True, "data": parsed, "provider": provider_name, "raw": response_text}
-                    except:
-                        return {"success": False, "data": None, "provider": provider_name, "raw": response_text, "error": "JSON parse failed"}
-            else:
-                return {"success": True, "data": response_text, "provider": provider_name}
-
-        except Exception as e:
-            # Try fallback provider
+            data = self._parse_json_response(response_text, provider_name) if json_mode else response_text
+            return {"success": True, "data": data, "provider": provider_name, "raw": response_text}
+        except LLMProviderError as primary_error:
+            logger.warning(
+                "Primary LLM provider failed; evaluating fallback",
+                extra={"provider": provider_name, "error_type": type(primary_error).__name__, "status_code": primary_error.status_code},
+            )
             fallback = settings.FALLBACK_LLM
             if fallback != provider_name and fallback in self.providers:
                 try:
-                    fallback_llm = self.providers[fallback]
-                    response_text = await fallback_llm.generate(system_prompt, user_prompt, json_mode)
-                    if json_mode:
-                        parsed = json.loads(response_text)
-                        return {"success": True, "data": parsed, "provider": fallback, "raw": response_text, "fallback_used": True}
-                    return {"success": True, "data": response_text, "provider": fallback, "fallback_used": True}
-                except Exception as fallback_e:
-                    return {"success": False, "error": f"Primary failed: {str(e)} | Fallback {fallback} also failed: {str(fallback_e)}", "provider": provider_name}
-            return {"success": False, "error": str(e), "provider": provider_name}
+                    response_text = await self.providers[fallback].generate(system_prompt, user_prompt, json_mode)
+                    data = self._parse_json_response(response_text, fallback) if json_mode else response_text
+                    return {"success": True, "data": data, "provider": fallback, "raw": response_text, "fallback_used": True}
+                except LLMProviderError as fallback_error:
+                    logger.error(
+                        "Fallback LLM provider failed",
+                        extra={"provider": fallback, "error_type": type(fallback_error).__name__, "status_code": fallback_error.status_code},
+                    )
+                    return {"success": False, "error": f"Primary failed: {primary_error} | Fallback {fallback} also failed: {fallback_error}", "provider": provider_name}
+            return {"success": False, "error": str(primary_error), "provider": provider_name}
 
     async def generate_stream(
         self,
@@ -250,8 +312,15 @@ class LLMService:
         user_prompt: str,
         provider: Optional[str] = None,
     ) -> AsyncGenerator[str, None]:
-        """Stream response tokens."""
-        llm = self._get_provider(provider)
+        """Stream response tokens with provider-specific degradation messages."""
+        try:
+            provider_name, llm = self._get_provider_entry(provider)
+        except LLMProviderError as exc:
+            logger.warning("LLM stream requested without a configured provider", extra={"error_type": type(exc).__name__})
+            yield "[LLM stream unavailable: no provider configured]"
+            return
+
+        logger.debug("Starting LLM stream", extra={"provider": provider_name})
         async for token in llm.generate_stream(system_prompt, user_prompt):
             yield token
 
