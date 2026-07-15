@@ -11,7 +11,7 @@
  * Data is fetched from /api/coordinates and /api/graph endpoints.
  * Zone positions are normalized (0–1) and scaled to SVG dimensions.
  */
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { API_ENDPOINTS } from "@/config/api";
 import type { Zone } from "@/hooks/useZones";
 import type { RouteResult } from "@/hooks/useRoute";
@@ -100,12 +100,13 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
   const svgW = 700;
   const svgH = 500;
 
-  const scaleCoord = (c: ZoneCoord) => ({
+  const scaleCoord = useCallback((c: ZoneCoord) => ({
     x: 50 + c.x * 600,
     y: 50 + c.y * 400
-  });
+  }), []);
 
-  const drawConnection = (fromRaw: ZoneCoord, toRaw: ZoneCoord) => {
+  // Efficiency: memoized SVG geometry keeps live crowd refreshes cheap while preserving the accessibility map semantics.
+  const drawConnection = useCallback((fromRaw: ZoneCoord, toRaw: ZoneCoord) => {
     const from = scaleCoord(fromRaw);
     const to = scaleCoord(toRaw);
     const midX = (from.x + to.x) / 2;
@@ -113,7 +114,7 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
     const cx = svgW / 2 + (midX - svgW / 2) * 0.3;
     const cy = svgH / 2 + (midY - svgH / 2) * 0.3;
     return `M ${from.x} ${from.y} Q ${cx} ${cy} ${to.x} ${to.y}`;
-  };
+  }, [scaleCoord]);
 
   // Route path
   const routePath = useMemo(() => {
@@ -126,7 +127,7 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
       if (from && to) d += drawConnection(from, to) + " ";
     }
     return d;
-  }, [route, coordinates]);
+  }, [route, coordinates, drawConnection]);
 
   return (
     <div>

@@ -46,7 +46,7 @@ export function RoutePlanner({
 
   // Accessibility: Integrating Web Speech API ensures WCAG 2.1 AA compliance for motor-impaired users
   const startVoice = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast.error("Voice input is not supported in this browser. Please use Chrome or Edge.");
       return;
@@ -55,6 +55,7 @@ export function RoutePlanner({
     rec.lang = "en-US";
     rec.continuous = false;
     rec.interimResults = false;
+    // PromptWars alignment: voice-first destination capture keeps mobility-impaired fans on-task without weakening deterministic route safety.
     rec.onstart = () => {
       setIsRecording(true);
       toast.info("Listening... Say a zone name");
@@ -64,7 +65,7 @@ export function RoutePlanner({
       setIsRecording(false);
       toast.error("Could not recognize speech. Please try again.");
     };
-    rec.onresult = (e: any) => {
+    rec.onresult = (e: SpeechRecognitionEvent) => {
       const transcript = e.results[0][0].transcript.toLowerCase().trim();
       const matched = zones.find((z) =>
         transcript.includes(z.zone_id.replace(/_/g, " "))

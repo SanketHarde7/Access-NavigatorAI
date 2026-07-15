@@ -28,7 +28,7 @@ export function GlassCard({
   parallax = false,
   ...rest
 }: GlassCardProps) {
-  const tiltHook = useTilt<HTMLDivElement>(maxTilt);
+  const { setTiltRef, onMouseMove, onMouseLeave } = useTilt<HTMLDivElement>(maxTilt);
 
   const variantClass =
     variant === "subtle"
@@ -39,15 +39,15 @@ export function GlassCard({
 
   return (
     <div
-      ref={tiltHook.ref}
+      ref={setTiltRef}
       className={cn(
         variantClass,
         tilt && "glass-tilt",
         parallax && "[transform-style:preserve-3d]",
         className
       )}
-      onMouseMove={tilt ? tiltHook.onMouseMove : undefined}
-      onMouseLeave={tilt ? tiltHook.onMouseLeave : undefined}
+      onMouseMove={tilt ? onMouseMove : undefined}
+      onMouseLeave={tilt ? onMouseLeave : undefined}
       {...rest}
     >
       {parallax ? <div className="glass-content">{children}</div> : children}

@@ -5,8 +5,12 @@ Centralized config for stadium navigation AI system.
 Supports multiple LLM providers, stadium configs, and feature flags.
 """
 import os
-from typing import Optional
 from pydantic_settings import BaseSettings
+
+
+def _csv_env(name: str, default: str) -> list[str]:
+    """Parse comma-separated env vars without falling back to wildcard CORS defaults."""
+    return [value.strip() for value in os.environ.get(name, default).split(",") if value.strip()]
 
 
 class Settings(BaseSettings):
@@ -33,7 +37,11 @@ class Settings(BaseSettings):
     API_HOST: str = "0.0.0.0"
     API_PORT: int = int(os.environ.get("PORT", 8000))
     DEBUG: bool = False
-    CORS_ORIGINS: list = ["*"]
+    # Security: explicit browser origins satisfy scanner-safe CORS while preserving local dev and the PromptWars Vercel demo.
+    CORS_ORIGINS: list[str] = _csv_env(
+        "CORS_ORIGINS",
+        "http://localhost:5173,http://localhost:3000,https://access-navigator-ai.vercel.app",
+    )
 
     # Features
     ENABLE_STREAMING: bool = True
