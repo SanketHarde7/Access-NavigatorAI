@@ -130,16 +130,16 @@ To run Access Navigator AI smoothly in development and pilot deployment, the fol
 
 ### Hardware Specifications
 
-- **RAM:** 16 GB minimum (recommended for running frontend, backend, and AI integrations together)
-- **Processor:** Intel Core i5 (10th Gen or above) / AMD Ryzen 5 or equivalent
-- **Storage:** 512 GB SSD (minimum 20 GB free space for project, dependencies, and logs)
-- **Network:** Stable broadband internet (minimum 20 Mbps) for real-time API communication
+- **RAM:** 4 GB minimum for desktop/ 2 gb minimum for mobile .
+- **Processor:** for pc any INTEL or AMD is sufficient.for Mobile any processor is good.
+- **Storage:** 128 gb is enough.
+- **Network:** Stable broadband internet (minimum 2 Mbps) for real-time API communication
 - **Optional Devices:** Microphone and speaker/headset for voice-based accessibility interactions
 
 ### Software Specifications
 
-- **Operating System:** Windows 10/11, Ubuntu 22.04+, or macOS 12+
-- **Frontend Runtime:** Node.js 18+ and npm
+- **Operating System:** Windows 10/11, Ubuntu 22.04+, or macOS 12+, Android 10+,etc or any OS that can run browser.
+- **Frontend technology:** HTML,CSS,JS 
 - **Backend Runtime:** Python 3.11+
 - **Backend Framework:** FastAPI with required Python packages from `requirements.txt`
 - **Browser Support:** Latest Chrome, Edge, or Firefox for best UI and accessibility support
