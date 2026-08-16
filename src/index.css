@@ -126,11 +126,28 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    background-color: #050814;
+    position: relative;
+  }
+
+  /* Single non-repeating fixed background layer with GPU acceleration */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
     background-image: url('/hero-bg.jpg');
     background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-color: #050814;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -10;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: transform;
   }
 }
 
@@ -861,11 +878,6 @@
    MOBILE PERFORMANCE OPTIMIZATION (60 FPS Smooth Scrolling)
    ============================================================ */
 @media (max-width: 1024px) {
-  body {
-    /* Critical fix: background-attachment: fixed causes severe GPU repaint lag on mobile */
-    background-attachment: scroll !important;
-  }
-
   /* Disable expensive blurred pseudo-element glows on mobile */
   .glass-3d::before,
   .glass-card::before,
