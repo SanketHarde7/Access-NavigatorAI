@@ -15,6 +15,10 @@ export function useTilt<T extends HTMLElement = HTMLDivElement>(maxTilt = 8) {
 
   const onMove = useCallback(
     (e: MouseEvent<T>) => {
+      // Disable tilt on touch/mobile devices to prevent frame drops
+      if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) {
+        return;
+      }
       const el = elementRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
@@ -22,7 +26,6 @@ export function useTilt<T extends HTMLElement = HTMLDivElement>(maxTilt = 8) {
       const y = (e.clientY - rect.top) / rect.height; // 0..1
       const tiltY = (x - 0.5) * 2 * maxTilt; // -max..max
       const tiltX = -(y - 0.5) * 2 * maxTilt;
-      // Accessibility & performance: CSS variables update only the active surface, avoiding React state churn during live crowd-map interactions.
       el.style.setProperty("--tilt-x", `${tiltX}deg`);
       el.style.setProperty("--tilt-y", `${tiltY}deg`);
       el.style.setProperty("--tilt-glare-x", `${x * 100}%`);
