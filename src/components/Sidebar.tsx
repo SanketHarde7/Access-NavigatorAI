@@ -20,8 +20,10 @@ import {
   Shield,
   ChevronRight,
   Landmark,
+  X,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 
 /** Available pages in the application. */
 export type Page = "dashboard" | "navigator" | "chat" | "analytics" | "settings";
@@ -37,6 +39,8 @@ interface SidebarProps {
   stadiumId: string;
   /** Callback when user selects a different stadium */
   onStadiumChange: (id: string) => void;
+  /** Optional callback to close the sidebar on mobile */
+  onClose?: () => void;
 }
 
 const navItems: { page: Page; label: string; icon: React.ReactNode }[] = [
@@ -63,24 +67,62 @@ const stadiums = [
   { id: "azteca", name: "Estadio Azteca", location: "Mexico City, MX" },
 ];
 
-export function Sidebar({ open, currentPage, onPageChange, stadiumId, onStadiumChange }: SidebarProps) {
+export function Sidebar({ open, currentPage, onPageChange, stadiumId, onStadiumChange, onClose }: SidebarProps) {
   if (!open) return null;
 
+  const handlePageSelect = (page: Page) => {
+    onPageChange(page);
+    if (window.innerWidth < 1024 && onClose) {
+      onClose();
+    }
+  };
+
+  const handleStadiumSelect = (id: string) => {
+    onStadiumChange(id);
+    if (window.innerWidth < 1024 && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <aside className="fixed left-0 top-14 bottom-0 z-40 w-64 glass-3d-sidebar flex flex-col">
-      <ScrollArea className="flex-1 py-4">
-        {/* Stadium Selector */}
-        <div className="px-4 mb-4">
-          <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">
-            Stadium
-          </label>
-          <div className="space-y-1.5">
-            {stadiums.map((s) => {
-              const active = stadiumId === s.id;
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => onStadiumChange(s.id)}
+    <>
+      {/* Mobile Backdrop Overlay */}
+      <div
+        className="fixed inset-0 bg-black/70 backdrop-blur-md z-40 lg:hidden transition-opacity duration-300"
+        onClick={onClose}
+        aria-hidden
+      />
+
+      <aside className="fixed left-0 top-0 lg:top-14 bottom-0 z-50 w-72 lg:w-64 glass-3d-sidebar flex flex-col shadow-2xl border-r border-white/10 animate-in slide-in-from-left duration-300">
+        {/* Mobile Header with Close Button */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 lg:hidden">
+          <div className="flex items-center gap-2">
+            <Landmark className="h-5 w-5" style={{ color: "var(--theme-accent)" }} />
+            <span className="text-sm font-bold text-white">Menu & Stadiums</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-8 w-8 text-slate-400 hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+
+        <ScrollArea className="flex-1 py-4">
+          {/* Stadium Selector */}
+          <div className="px-4 mb-4">
+            <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">
+              Stadium
+            </label>
+            <div className="space-y-1.5">
+              {stadiums.map((s) => {
+                const active = stadiumId === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => handleStadiumSelect(s.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-300 group ${
                     active
                       ? "glass-3d-subtle glow-ring"
@@ -140,7 +182,7 @@ export function Sidebar({ open, currentPage, onPageChange, stadiumId, onStadiumC
               return (
                 <button
                   key={item.page}
-                  onClick={() => onPageChange(item.page)}
+                  onClick={() => handlePageSelect(item.page)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-300 group ${
                     active
                       ? "glass-3d-subtle glow-ring"
@@ -230,5 +272,6 @@ export function Sidebar({ open, currentPage, onPageChange, stadiumId, onStadiumC
         </div>
       </div>
     </aside>
+    </>
   );
 }

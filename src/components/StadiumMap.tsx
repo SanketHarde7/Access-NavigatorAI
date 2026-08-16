@@ -147,7 +147,11 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
           </svg>
         </div>
 
-        <svg width={svgW} height={svgH} className="relative z-10 max-w-full h-auto">
+        <svg
+          viewBox={`0 0 ${svgW} ${svgH}`}
+          preserveAspectRatio="xMidYMid meet"
+          className="relative z-10 w-full h-auto block select-none"
+        >
           <defs>
             <linearGradient id="zoneGlow" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
@@ -228,9 +232,12 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
               <g
                 key={zone.zone_id}
                 onClick={() => onZoneClick?.(zone.zone_id)}
-                className="cursor-pointer transition-transform hover:scale-110"
+                className="cursor-pointer transition-transform active:scale-95 hover:scale-110"
                 style={{ transformOrigin: `${px}px ${py}px` }}
               >
+                {/* Enlarged invisible tap target for finger touches on mobile */}
+                <circle cx={px} cy={py} r={24} fill="transparent" />
+
                 {/* Node circle */}
                 <circle
                   cx={px} cy={py} r={r}
@@ -267,7 +274,7 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
                       width="28"
                       height="12"
                       rx="4"
-                      fill="rgba(15, 23, 42, 0.8)"
+                      fill="rgba(15, 23, 42, 0.85)"
                       stroke={strokeColor}
                       strokeWidth="0.5"
                     />
@@ -290,22 +297,22 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-400">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 text-[11px] sm:text-xs text-slate-400">
         {[
           { color: "#10b981", label: "Operational" },
           { color: "#f59e0b", label: "Congested" },
           { color: "#ef4444", label: "Maintenance" },
           { label: "Active Route", useTheme: true },
         ].map((item) => (
-          <div key={item.label} className="flex items-center gap-1.5 glass-pill px-2 py-1 rounded-full">
+          <div key={item.label} className="flex items-center gap-1.5 glass-pill px-2 sm:px-2.5 py-1 rounded-full">
             <div
-              className="w-2.5 h-2.5 rounded-sm"
+              className="w-2.5 h-2.5 rounded-sm shrink-0"
               style={{
                 background: item.useTheme ? "var(--theme-accent)" : item.color,
                 boxShadow: `0 0 6px ${item.useTheme ? "var(--theme-glow-strong)" : item.color}`,
               }}
             />
-            <span>{item.label}</span>
+            <span className="whitespace-nowrap">{item.label}</span>
           </div>
         ))}
       </div>

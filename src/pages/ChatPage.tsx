@@ -23,8 +23,8 @@ export function ChatPage({ stadiumId }: ChatPageProps) {
   };
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-col">
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 min-h-0">
+    <div className="h-[calc(100dvh-8rem)] lg:h-[calc(100vh-3.5rem)] flex flex-col">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-3 sm:p-4 min-h-0">
         {/* Info Panel */}
         <div className="hidden lg:flex flex-col gap-4">
           <GlassCard tilt maxTilt={3} className="rounded-xl p-4">

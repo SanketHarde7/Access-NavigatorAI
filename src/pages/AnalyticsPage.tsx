@@ -25,11 +25,11 @@ export function AnalyticsPage({ stadiumId }: AnalyticsPageProps) {
   const [horizon, setHorizon] = useState(30);
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-3 sm:p-4 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
             <span
               className="p-1.5 rounded-lg"
               style={{
@@ -46,12 +46,12 @@ export function AnalyticsPage({ stadiumId }: AnalyticsPageProps) {
             Powered by Predictive Agent with LLM forecasting
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={() => fetchAnalytics()}
-            className="glass-3d-subtle hover:bg-white/10 text-xs transition-transform active:scale-95 hover:-translate-y-0.5"
+            className="glass-3d-subtle hover:bg-white/10 text-xs transition-transform active:scale-95"
           >
             <Brain className="h-3.5 w-3.5 mr-1.5" />
             Analytics
@@ -60,7 +60,7 @@ export function AnalyticsPage({ stadiumId }: AnalyticsPageProps) {
             variant="outline"
             size="sm"
             onClick={() => fetchPredictions(horizon)}
-            className="glass-3d-subtle hover:bg-white/10 text-xs transition-transform active:scale-95 hover:-translate-y-0.5"
+            className="glass-3d-subtle hover:bg-white/10 text-xs transition-transform active:scale-95"
           >
             <Sparkles className="h-3.5 w-3.5 mr-1.5" />
             Predictions
@@ -69,30 +69,42 @@ export function AnalyticsPage({ stadiumId }: AnalyticsPageProps) {
       </div>
 
       {/* Controls */}
-      <GlassCard tilt maxTilt={2} className="rounded-xl p-4">
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex items-center gap-2">
+      <GlassCard tilt maxTilt={2} className="rounded-xl p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
+            <div className="flex items-center gap-2">
+              <span
+                className="p-1.5 rounded-lg"
+                style={{ background: "#a78bfa22", color: "#a78bfa", boxShadow: "0 0 8px #a78bfa66" }}
+              >
+                <Clock className="h-4 w-4" />
+              </span>
+              <span className="text-xs sm:text-sm text-slate-300 font-medium">Prediction Horizon</span>
+            </div>
             <span
-              className="p-1.5 rounded-lg"
-              style={{ background: "#a78bfa22", color: "#a78bfa", boxShadow: "0 0 8px #a78bfa66" }}
+              className="sm:hidden text-xs font-semibold glass-pill px-2.5 py-1 rounded-full text-center"
+              style={{ color: "var(--theme-accent)" }}
             >
-              <Clock className="h-4 w-4" />
+              {horizon} min
             </span>
-            <span className="text-sm text-slate-300">Prediction Horizon</span>
           </div>
-          <div className="flex-1 w-full max-w-xs">
-            <Slider value={[horizon]} onValueChange={(v) => setHorizon(v[0])} min={5} max={120} step={5} />
+
+          <div className="flex-1 w-full flex items-center gap-3">
+            <div className="flex-1">
+              <Slider value={[horizon]} onValueChange={(v) => setHorizon(v[0])} min={5} max={120} step={5} />
+            </div>
+            <span
+              className="hidden sm:inline-block text-sm font-medium w-16 glass-pill px-2 py-1 rounded-full text-center"
+              style={{ color: "var(--theme-accent)" }}
+            >
+              {horizon} min
+            </span>
           </div>
-          <span
-            className="text-sm font-medium w-16 glass-pill px-2 py-1 rounded-full text-center"
-            style={{ color: "var(--theme-accent)" }}
-          >
-            {horizon} min
-          </span>
+
           <Button
             size="sm"
             onClick={() => fetchPredictions(horizon)}
-            className="btn-theme rounded-xl"
+            className="btn-theme rounded-xl w-full sm:w-auto"
           >
             <Sparkles className="h-4 w-4 mr-1.5" />
             Predict

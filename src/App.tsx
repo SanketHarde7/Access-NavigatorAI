@@ -19,6 +19,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/Header";
 import { Sidebar, type Page } from "@/components/Sidebar";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Dashboard } from "@/pages/Dashboard";
 import { ChatPage } from "@/pages/ChatPage";
 import { AnalyticsPage } from "@/pages/AnalyticsPage";
@@ -33,10 +34,29 @@ const STADIUM_NAMES: Record<string, string> = {
 };
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Default sidebar open only on desktop screens
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth >= 1024;
+    }
+    return true;
+  });
   const [currentPage, setCurrentPage] = useState<Page>("dashboard");
   const [stadiumId, setStadiumId] = useState(DEFAULT_STADIUM);
   const [connected, setConnected] = useState(false);
+
+  // Auto-adapt sidebar state on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Derived stadium name from the lookup table
   const stadiumName = STADIUM_NAMES[stadiumId] || stadiumId;
@@ -81,10 +101,10 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen text-white bg-mesh relative"
+      className="min-h-screen text-white bg-mesh relative selection:bg-cyan-500/30 selection:text-cyan-200"
       data-stadium={stadiumId}
     >
-      {/* Animated parallax orb layer (sibling so ::before/::after keep working) */}
+      {/* Animated parallax orb layer */}
       <div className="bg-orb" aria-hidden />
 
       <Header
@@ -101,15 +121,24 @@ export default function App() {
         onPageChange={setCurrentPage}
         stadiumId={stadiumId}
         onStadiumChange={handleStadiumChange}
+        onClose={() => setSidebarOpen(false)}
       />
 
       <main
         className={`relative z-10 transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-0"
-        }`}
+          sidebarOpen ? "lg:ml-64" : "lg:ml-0"
+        } pb-20 lg:pb-6`}
       >
         {renderPage()}
       </main>
+
+      {/* Mobile Bottom Navigation for thumb-friendly interaction */}
+      <MobileBottomNav
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        onOpenStadiums={() => setSidebarOpen(true)}
+        stadiumName={stadiumName}
+      />
 
       {/* Toast notifications — glassmorphic styling */}
       <Toaster
