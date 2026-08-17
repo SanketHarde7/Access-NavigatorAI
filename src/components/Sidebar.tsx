@@ -23,7 +23,6 @@ import {
   X,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 
 /** Available pages in the application. */
 export type Page = "dashboard" | "navigator" | "chat" | "analytics" | "settings";
