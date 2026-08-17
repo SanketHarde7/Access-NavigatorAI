@@ -59,7 +59,7 @@ export function DemoControls({ stadiumId, onScenarioTriggered }: DemoControlsPro
         </span>
         <h3 className="text-sm font-semibold text-white">Demo Scenarios</h3>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {scenarios.map((s) => (
           <Button
             key={s.type}
@@ -67,15 +67,15 @@ export function DemoControls({ stadiumId, onScenarioTriggered }: DemoControlsPro
             size="sm"
             onClick={() => triggerScenario(s.type)}
             disabled={loading !== null}
-            className="glass-3d-subtle text-xs h-8 hover:bg-white/10 transition-transform active:scale-95 hover:-translate-y-0.5"
+            className="glass-3d-subtle text-xs h-8 hover:bg-white/10 transition-transform active:scale-95 hover:-translate-y-0.5 justify-start px-2.5 rounded-xl border border-white/10"
             style={{ color: s.color }}
           >
             {loading === s.type ? (
-              <RotateCcw className="h-3.5 w-3.5 animate-spin mr-1.5" />
+              <RotateCcw className="h-3.5 w-3.5 animate-spin mr-1.5 shrink-0" />
             ) : (
               <>
-                {s.icon}
-                <span className="ml-1.5">{s.label}</span>
+                <span className="shrink-0">{s.icon}</span>
+                <span className="ml-1.5 truncate">{s.label}</span>
               </>
             )}
           </Button>

@@ -84,7 +84,7 @@ export const API_ENDPOINTS = {
 } as const;
 
 /** Default stadium ID used on first load */
-export const DEFAULT_STADIUM = "metlife";
+export const DEFAULT_STADIUM = "narendra_modi";
 
 /** How often (ms) zone data is auto-refreshed from the backend */
 export const REFRESH_INTERVAL = 5000;

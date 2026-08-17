@@ -28,9 +28,11 @@ import { toast } from "sonner";
 
 /** Human-readable stadium names keyed by stadium ID. */
 const STADIUM_NAMES: Record<string, string> = {
-  metlife: "MetLife Stadium",
-  sofi: "SoFi Stadium",
-  azteca: "Estadio Azteca",
+  narendra_modi: "Narendra Modi Stadium",
+  wankhede: "Wankhede Stadium",
+  chinnaswamy: "M. Chinnaswamy Stadium",
+  eden_gardens: "Eden Gardens",
+  arun_jaitley: "Arun Jaitley Stadium",
 };
 
 export default function App() {
@@ -101,12 +103,13 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen text-white bg-mesh relative selection:bg-cyan-500/30 selection:text-cyan-200"
+      className="h-screen w-screen overflow-hidden text-white bg-mesh relative flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200"
       data-stadium={stadiumId}
     >
       {/* Animated parallax orb layer */}
       <div className="bg-orb" aria-hidden />
 
+      {/* Top Navbar — Full Screen Width (100% Spanning Header) */}
       <Header
         connected={connected}
         stadiumName={stadiumName}
@@ -115,22 +118,23 @@ export default function App() {
         stadiumId={stadiumId}
       />
 
-      <Sidebar
-        open={sidebarOpen}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        stadiumId={stadiumId}
-        onStadiumChange={handleStadiumChange}
-        onClose={() => setSidebarOpen(false)}
-      />
+      {/* Below-Header Stage: Sidebar (Left) + Main Content (Right) */}
+      <div className="flex-1 flex overflow-hidden min-h-0 relative z-10">
+        {/* Sidebar Component */}
+        <Sidebar
+          open={sidebarOpen}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          stadiumId={stadiumId}
+          onStadiumChange={handleStadiumChange}
+          onClose={() => setSidebarOpen(false)}
+        />
 
-      <main
-        className={`relative z-10 transition-all duration-300 ${
-          sidebarOpen ? "lg:ml-64" : "lg:ml-0"
-        } pb-20 lg:pb-6`}
-      >
-        {renderPage()}
-      </main>
+        {/* Scrollable Main Content Viewport */}
+        <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-2 pb-20 lg:pb-6 min-w-0">
+          {renderPage()}
+        </main>
+      </div>
 
       {/* Mobile Bottom Navigation for thumb-friendly interaction */}
       <MobileBottomNav

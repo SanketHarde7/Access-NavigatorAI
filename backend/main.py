@@ -63,11 +63,18 @@ from middleware.safety_middleware import SafetyMiddleware
 STARTUP_TIME = datetime.utcnow()
 
 
+from core.pg_database import init_db
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager - start/stop background tasks."""
     # Startup
     print("Starting Access Navigator AI...")
+    try:
+        await init_db()
+    except Exception as e:
+        print(f"Database init notice: {e}")
     await db.start_simulation()
     print(f"Simulation started for {len(db.list_stadiums())} stadiums")
     yield
@@ -163,7 +170,7 @@ async def get_stadium(stadium_id: str):
 # ============== ZONES ==============
 
 @app.get("/api/zones", response_model=List[ZoneStatus])
-async def get_zones(stadium_id: str = Query("metlife")):
+async def get_zones(stadium_id: str = Query("narendra_modi")):
     """Get all zones for a stadium."""
     if stadium_id not in [s["stadium_id"] for s in db.list_stadiums()]:
         raise HTTPException(status_code=404, detail="Stadium not found")
@@ -185,7 +192,7 @@ async def get_zones(stadium_id: str = Query("metlife")):
 
 
 @app.get("/api/zones/{zone_id}")
-async def get_zone(zone_id: str, stadium_id: str = Query("metlife")):
+async def get_zone(zone_id: str, stadium_id: str = Query("narendra_modi")):
     """Get specific zone details."""
     zone = db.get_zone(stadium_id, zone_id)
     if not zone:
@@ -235,7 +242,7 @@ async def batch_update_zones(update: BatchZoneUpdate):
 # ============== GRAPH ==============
 
 @app.get("/api/graph")
-async def get_graph(stadium_id: str = Query("metlife")):
+async def get_graph(stadium_id: str = Query("narendra_modi")):
     """Get stadium connectivity graph."""
     graph = db.get_graph(stadium_id)
     if not graph:
@@ -244,7 +251,7 @@ async def get_graph(stadium_id: str = Query("metlife")):
 
 
 @app.get("/api/coordinates")
-async def get_coordinates(stadium_id: str = Query("metlife")):
+async def get_coordinates(stadium_id: str = Query("narendra_modi")):
     """Get zone coordinates for visualization."""
     coords = db.get_coordinates(stadium_id)
     if not coords:
@@ -356,7 +363,7 @@ async def get_route(
 
 @app.post("/api/route/simple")
 async def get_route_simple(
-    stadium_id: str = Query("metlife"),
+    stadium_id: str = Query("narendra_modi"),
     start: str = Query(...),
     end: str = Query(...),
     accessibility_need: str = Query("wheelchair"),
@@ -431,7 +438,7 @@ async def chat(request: Request, body: ChatRequest):
     result = await ConversationalAgent.chat(
         message=body.message,
         user_id=body.user_id,
-        stadium_id=body.stadium_id or "metlife",
+        stadium_id=body.stadium_id or "narendra_modi",
         accessibility_need=body.accessibility_need.value if body.accessibility_need else "wheelchair",
         conversation_history=[m.model_dump() for m in (body.conversation_history or [])],
     )
@@ -455,7 +462,7 @@ async def chat_stream(request: Request, body: ChatRequest):
         async for token in ConversationalAgent.chat_stream(
             message=body.message,
             user_id=body.user_id,
-            stadium_id=body.stadium_id or "metlife",
+            stadium_id=body.stadium_id or "narendra_modi",
             accessibility_need=body.accessibility_need.value if body.accessibility_need else "wheelchair",
             conversation_history=[m.model_dump() for m in (body.conversation_history or [])],
         ):
@@ -517,7 +524,7 @@ async def get_analytics(stadium_id: str):
 
 @app.post("/api/data/upload")
 async def upload_data(
-    stadium_id: str = Query("metlife"),
+    stadium_id: str = Query("narendra_modi"),
     file: UploadFile = File(...),
 ):
     """

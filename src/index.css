@@ -51,26 +51,26 @@
     --sidebar-border: 217 33% 17%;
     --sidebar-ring: 187 94% 43%;
 
-    /* Stadium Theme Variables */
-    --theme-from: #3b82f6;
-    --theme-to: #7dd3fc;
-    --theme-accent: #60a5fa;
-    --theme-glow: rgba(125, 211, 252, 0.4);
-    --theme-glow-strong: rgba(125, 211, 252, 0.8);
-    --theme-border: rgba(125, 211, 252, 0.2);
-    --theme-bg: rgba(59, 130, 246, 0.2);
+    /* Default Stadium Theme Variables (Narendra Modi Saffron & Amber Gold) */
+    --theme-from: #ff5e00;
+    --theme-to: #ffb703;
+    --theme-accent: #fb8500;
+    --theme-glow: rgba(255, 94, 0, 0.45);
+    --theme-glow-strong: rgba(255, 183, 3, 0.85);
+    --theme-border: rgba(255, 183, 3, 0.35);
+    --theme-bg: rgba(255, 94, 0, 0.16);
 
-    /* 3D Glass — universal depth tokens */
-    --glass-bg: rgba(8, 12, 28, 0.02);
-    --glass-bg-deep: rgba(4, 7, 20, 0.04);
-    --glass-bg-light: rgba(20, 28, 50, 0.01);
-    --glass-sheen: rgba(255, 255, 255, 0.08);
-    --glass-sheen-soft: rgba(255, 255, 255, 0.03);
-    --glass-rim: rgba(255, 255, 255, 0.06);
-    --glass-ao: rgba(0, 0, 0, 0.05);
-    --glass-blur: 12px;
-    --glass-blur-strong: 24px;
-    --glass-saturation: 110%;
+    /* 3D Glass — premium depth tokens */
+    --glass-bg: rgba(10, 16, 36, 0.68);
+    --glass-bg-deep: rgba(5, 9, 24, 0.85);
+    --glass-bg-light: rgba(22, 34, 68, 0.52);
+    --glass-sheen: rgba(255, 255, 255, 0.18);
+    --glass-sheen-soft: rgba(255, 255, 255, 0.06);
+    --glass-rim: rgba(255, 255, 255, 0.2);
+    --glass-ao: rgba(0, 0, 0, 0.4);
+    --glass-blur: 14px;
+    --glass-blur-strong: 18px;
+    --glass-saturation: 140%;
 
     /* 3D Tilt tokens (set dynamically by JS) */
     --tilt-x: 0deg;
@@ -79,37 +79,59 @@
     --tilt-glare-y: 50%;
   }
 
-  /* MetLife Stadium — Bright Sky Blue */
-  [data-stadium="metlife"] {
-    --theme-from: #3b82f6;
-    --theme-to: #7dd3fc;
-    --theme-accent: #60a5fa;
-    --theme-glow: rgba(125, 211, 252, 0.4);
-    --theme-glow-strong: rgba(125, 211, 252, 0.8);
-    --theme-border: rgba(125, 211, 252, 0.2);
-    --theme-bg: rgba(59, 130, 246, 0.2);
+  /* 1. Narendra Modi Stadium (Ahmedabad) — Solar Saffron & Radiant Amber Gold */
+  [data-stadium="narendra_modi"] {
+    --theme-from: #ff5e00;
+    --theme-to: #ffb703;
+    --theme-accent: #fb8500;
+    --theme-glow: rgba(255, 94, 0, 0.45);
+    --theme-glow-strong: rgba(255, 183, 3, 0.85);
+    --theme-border: rgba(255, 183, 3, 0.35);
+    --theme-bg: rgba(255, 94, 0, 0.16);
   }
 
-  /* SoFi Stadium — Warm Violet / Amber */
-  [data-stadium="sofi"] {
-    --theme-from: #7c3aed;
-    --theme-to: #f59e0b;
-    --theme-accent: #a78bfa;
-    --theme-glow: rgba(167, 139, 250, 0.15);
-    --theme-glow-strong: rgba(167, 139, 250, 0.3);
-    --theme-border: rgba(167, 139, 250, 0.12);
-    --theme-bg: rgba(124, 58, 237, 0.08);
+  /* 2. Wankhede Stadium (Mumbai) — Marine Drive Midnight Sapphire & Electric Cyan-Diamond */
+  [data-stadium="wankhede"] {
+    --theme-from: #0066ff;
+    --theme-to: #00f5ff;
+    --theme-accent: #00e5ff;
+    --theme-glow: rgba(0, 229, 255, 0.42);
+    --theme-glow-strong: rgba(0, 245, 255, 0.88);
+    --theme-border: rgba(0, 229, 255, 0.42);
+    --theme-bg: rgba(0, 102, 255, 0.18);
   }
 
-  /* Estadio Azteca — Lime / Electric Yellow */
-  [data-stadium="azteca"] {
-    --theme-from: #22c55e;
-    --theme-to: #fef08a;
-    --theme-accent: #86efac;
-    --theme-glow: rgba(254, 240, 138, 0.4);
-    --theme-glow-strong: rgba(254, 240, 138, 0.8);
-    --theme-border: rgba(254, 240, 138, 0.2);
-    --theme-bg: rgba(34, 197, 94, 0.2);
+  /* 3. M. Chinnaswamy Stadium (Bengaluru) — Royal Crimson Fire & Imperial Gold */
+  [data-stadium="chinnaswamy"] {
+    --theme-from: #f43f5e;
+    --theme-to: #fbbf24;
+    --theme-accent: #fb7185;
+    --theme-glow: rgba(244, 63, 94, 0.45);
+    --theme-glow-strong: rgba(251, 191, 36, 0.85);
+    --theme-border: rgba(244, 63, 94, 0.35);
+    --theme-bg: rgba(244, 63, 94, 0.16);
+  }
+
+  /* 4. Eden Gardens (Kolkata) — Ethereal Aurora Emerald & Neon Mint Jade */
+  [data-stadium="eden_gardens"] {
+    --theme-from: #059669;
+    --theme-to: #10b981;
+    --theme-accent: #34d399;
+    --theme-glow: rgba(16, 185, 129, 0.45);
+    --theme-glow-strong: rgba(52, 211, 153, 0.85);
+    --theme-border: rgba(52, 211, 153, 0.35);
+    --theme-bg: rgba(5, 150, 105, 0.16);
+  }
+
+  /* 5. Arun Jaitley Stadium (New Delhi) — Cyberpunk Amethyst & Electric Orchid */
+  [data-stadium="arun_jaitley"] {
+    --theme-from: #8b5cf6;
+    --theme-to: #ec4899;
+    --theme-accent: #c084fc;
+    --theme-glow: rgba(139, 92, 246, 0.45);
+    --theme-glow-strong: rgba(236, 72, 153, 0.85);
+    --theme-border: rgba(192, 132, 252, 0.35);
+    --theme-bg: rgba(139, 92, 246, 0.16);
   }
 }
 
@@ -126,11 +148,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    background-color: #050814;
+    background-color: #040714;
     position: relative;
   }
 
-  /* Single non-repeating fixed background layer with GPU acceleration */
+  /* Luminous, high-depth stadium background layer */
   body::before {
     content: "";
     position: fixed;
@@ -140,14 +162,16 @@
     bottom: 0;
     width: 100%;
     height: 100%;
-    background-image: url('/hero-bg.jpg');
+    background-image:
+      radial-gradient(ellipse 85% 65% at 50% 35%, rgba(6, 10, 28, 0.1) 0%, rgba(4, 7, 20, 0.52) 65%, rgba(2, 4, 14, 0.88) 100%),
+      linear-gradient(180deg, rgba(6, 10, 28, 0.22) 0%, rgba(4, 7, 20, 0.48) 100%),
+      url('/hero-bg.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     z-index: -10;
     pointer-events: none;
     transform: translateZ(0);
-    will-change: transform;
   }
 }
 
@@ -203,83 +227,36 @@
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
   border-radius: var(--radius);
-  /* Refraction edge — themed chromatic rim */
-  border: 1px solid transparent;
-  background-clip: padding-box;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  border-left-color: rgba(255, 255, 255, 0.15);
   box-shadow:
-    0 12px 30px -10px rgba(0, 0, 0, 0.4),
-    0 4px 12px -4px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
-    inset 0 -1px 4px 0 rgba(0, 0, 0, 0.1);
+    0 16px 36px -8px rgba(0, 0, 0, 0.65),
+    0 4px 12px -2px rgba(0, 0, 0, 0.35),
+    0 0 20px -4px var(--theme-glow),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 4px 0 rgba(0, 0, 0, 0.2);
   transition:
-    transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    box-shadow 0.5s ease;
+    transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.3s ease;
   transform-style: preserve-3d;
   z-index: 10;
   isolation: isolate;
 }
 
-/* Pseudo: themed rim glow that bleeds out from behind card */
-.glass-3d::before,
-.glass-card::before {
-  content: "";
-  position: absolute;
-  inset: -20px;
-  z-index: -2;
-  background:
-    radial-gradient(circle at 30% 0%, var(--theme-glow) 0%, transparent 55%),
-    radial-gradient(circle at 70% 100%, var(--theme-glow) 0%, transparent 60%);
-  filter: blur(35px);
-  opacity: 0.15;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* Pseudo: thin refraction edge (chromatic rim) on top of card */
-.glass-3d::after,
-.glass-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.6) 0%,
-    var(--theme-border) 25%,
-    transparent 50%,
-    var(--theme-border) 75%,
-    rgba(255, 255, 255, 0.15) 100%
-  );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0.9;
-}
-
 .glass-3d:hover,
 .glass-card:hover {
-  transform: translateY(-3px) scale(1.005);
+  transform: translateY(-2px);
   box-shadow:
-    0 16px 40px -10px rgba(0, 0, 0, 0.5),
-    0 6px 16px -4px rgba(0, 0, 0, 0.3),
-    0 0 20px var(--theme-glow),
-    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 6px 0 rgba(0, 0, 0, 0.15);
-}
-
-.glass-3d:hover::before,
-.glass-card:hover::before {
-  opacity: 0.3;
-  transform: scale(1.02);
+    0 20px 45px -8px rgba(0, 0, 0, 0.75),
+    0 6px 18px -3px rgba(0, 0, 0, 0.4),
+    0 0 28px -2px var(--theme-glow),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 6px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* ============================================================
-   3D GLASS SUBTLE — secondary surface, less depth
+   3D GLASS SUBTLE — secondary surface, lightweight
    ============================================================ */
 .glass-3d-subtle,
 .glass-subtle {
@@ -290,98 +267,86 @@
       transparent 35%
     ),
     radial-gradient(ellipse at 80% 110%,
-      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.35) 0%,
       transparent 55%
     ),
     linear-gradient(180deg,
-      var(--glass-bg-light) 0%,
-      var(--glass-bg) 100%
+      rgba(15, 23, 48, 0.65) 0%,
+      rgba(8, 13, 30, 0.82) 100%
     );
   background-blend-mode: normal, normal, normal;
-  backdrop-filter: blur(10px) saturate(110%);
-  -webkit-backdrop-filter: blur(10px) saturate(110%);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
   border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.18);
   box-shadow:
-    0 8px 20px -6px rgba(0, 0, 0, 0.3),
-    0 3px 8px -3px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 4px 0 rgba(0, 0, 0, 0.1);
-  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    0 10px 24px -6px rgba(0, 0, 0, 0.5),
+    0 2px 8px -2px rgba(0, 0, 0, 0.25),
+    0 0 14px -3px var(--theme-glow),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 4px 0 rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   transform-style: preserve-3d;
   z-index: 5;
   isolation: isolate;
 }
 
-.glass-3d-subtle::before,
-.glass-subtle::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  z-index: -1;
-  background: radial-gradient(circle at center, var(--theme-glow) 0%, transparent 70%);
-  filter: blur(20px);
-  opacity: 0.1;
-  transition: opacity 0.35s ease;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
 .glass-3d-subtle:hover,
 .glass-subtle:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1.5px);
   box-shadow:
-    0 12px 30px -6px rgba(0, 0, 0, 0.4),
-    0 4px 12px -3px rgba(0, 0, 0, 0.25),
-    0 0 12px var(--theme-glow),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
-    inset 0 -1px 4px 0 rgba(0, 0, 0, 0.1);
-}
-.glass-3d-subtle:hover::before,
-.glass-subtle:hover::before {
-  opacity: 0.2;
+    0 14px 32px -6px rgba(0, 0, 0, 0.6),
+    0 4px 12px -2px rgba(0, 0, 0, 0.3),
+    0 0 18px var(--theme-glow),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 4px 0 rgba(0, 0, 0, 0.15);
 }
 
 /* ============================================================
-   3D GLASS HEADER — top bar with strong depth
+   3D GLASS HEADER — distinct floating command bar
    ============================================================ */
 .glass-3d-header,
 .glass-header {
   background:
     linear-gradient(180deg,
-      rgba(255, 255, 255, 0.08) 0%,
-      transparent 100%
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.02) 100%
     ),
     linear-gradient(180deg,
-      rgba(8, 12, 28, 0.7) 0%,
-      rgba(4, 7, 20, 0.85) 100%
+      rgba(10, 15, 36, 0.92) 0%,
+      rgba(6, 10, 26, 0.96) 100%
     );
-  backdrop-filter: blur(var(--glass-blur-strong)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(160%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow:
-    0 30px 60px -15px rgba(0, 0, 0, 0.9),
-    0 12px 24px -6px rgba(0, 0, 0, 0.7),
-    0 0 80px -10px var(--theme-glow),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.25),
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    0 20px 40px -10px rgba(0, 0, 0, 0.8),
+    0 4px 12px -2px rgba(0, 0, 0, 0.5),
+    0 0 24px -4px var(--theme-glow),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.25);
 }
 
 .glass-3d-header::after,
 .glass-header::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 1px;
+  left: 5%;
+  right: 5%;
+  bottom: 0;
+  height: 1.5px;
   background: linear-gradient(90deg,
     transparent 0%,
-    var(--theme-accent) 20%,
-    var(--theme-accent) 80%,
+    var(--theme-accent) 25%,
+    var(--theme-glow-strong) 50%,
+    var(--theme-accent) 75%,
     transparent 100%
   );
-  opacity: 0.6;
+  opacity: 0.8;
   filter: blur(0.5px);
+  border-radius: 9999px;
 }
 
 /* ============================================================
@@ -779,7 +744,7 @@
     radial-gradient(ellipse at bottom, var(--theme-bg) 0%, transparent 60%);
 }
 
-/* Parallax orbs — animated colored light sources */
+/* Ambient light orbs — static hardware-accelerated ambient glows */
 .bg-mesh::before,
 .bg-mesh::after,
 .bg-mesh > .bg-orb {
@@ -792,33 +757,22 @@
 
 .bg-mesh::before {
   background:
-    radial-gradient(circle at 15% 25%, var(--theme-bg) 0%, transparent 35%),
-    radial-gradient(circle at 85% 15%, var(--theme-bg) 0%, transparent 30%);
-  filter: blur(40px);
-  opacity: 0.15;
-  animation: orb-drift-1 25s ease-in-out infinite;
+    radial-gradient(circle 600px at 15% 20%, var(--theme-bg) 0%, transparent 70%),
+    radial-gradient(circle 500px at 85% 15%, var(--theme-bg) 0%, transparent 65%);
+  opacity: 0.18;
 }
 
 .bg-mesh::after {
   background:
-    radial-gradient(circle at 75% 75%, var(--theme-bg) 0%, transparent 40%),
-    radial-gradient(circle at 25% 80%, var(--theme-bg) 0%, transparent 35%);
-  filter: blur(50px);
-  opacity: 0.1;
-  animation: orb-drift-2 35s ease-in-out infinite;
+    radial-gradient(circle 700px at 75% 80%, var(--theme-bg) 0%, transparent 70%),
+    radial-gradient(circle 500px at 20% 85%, var(--theme-bg) 0%, transparent 65%);
+  opacity: 0.12;
 }
 
-/* Light rays from corner — subtle conic gradient */
 .bg-mesh > .bg-orb {
   background:
-    repeating-conic-gradient(from 0deg at 50% 50%,
-      transparent 0deg,
-      var(--theme-bg) 6deg,
-      transparent 18deg
-    );
-  background-size: 200% 200%;
-  opacity: 0.15;
-  animation: orb-drift-3 60s linear infinite;
+    radial-gradient(ellipse 80% 50% at 50% 10%, var(--theme-glow) 0%, transparent 60%);
+  opacity: 0.22;
 }
 
 /* Ensure main content stays above the background */
@@ -875,31 +829,26 @@
 }
 
 /* ============================================================
+   GLOBAL SMOOTH SCROLLING & HARDWARE ACCELERATION
+   ============================================================ */
+main {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+}
+
+/* ============================================================
    MOBILE PERFORMANCE OPTIMIZATION (60 FPS Smooth Scrolling)
    ============================================================ */
 @media (max-width: 1024px) {
-  /* Disable expensive blurred pseudo-element glows on mobile */
-  .glass-3d::before,
-  .glass-card::before,
-  .glass-3d-subtle::before,
-  .bg-orb {
-    display: none !important;
-  }
-
-  /* Optimize backdrop blur and disable heavy 3D transforms */
+  /* Optimize backdrop blur and disable heavy 3D transforms on mobile */
   .glass-3d,
   .glass-card,
   .glass-3d-subtle {
     transform: none !important;
-    backdrop-filter: blur(8px) saturate(110%) !important;
-    -webkit-backdrop-filter: blur(8px) saturate(110%) !important;
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.5) !important;
-  }
-
-  /* Hardware acceleration hint */
-  main, header, aside, nav {
-    transform: translateZ(0);
-    will-change: transform;
+    backdrop-filter: blur(8px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.6) !important;
   }
 }
 

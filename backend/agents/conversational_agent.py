@@ -86,7 +86,7 @@ Respond naturally. Use markdown for formatting. Be concise but thorough."""
     async def chat(
         message: str,
         user_id: str,
-        stadium_id: str = "metlife",
+        stadium_id: str = "narendra_modi",
         accessibility_need: str = "wheelchair",
         conversation_history: Optional[List[Dict]] = None,
         provider: Optional[str] = None,
@@ -174,7 +174,7 @@ Respond naturally. Use markdown for formatting. Be concise but thorough."""
     async def chat_stream(
         message: str,
         user_id: str,
-        stadium_id: str = "metlife",
+        stadium_id: str = "narendra_modi",
         accessibility_need: str = "wheelchair",
         conversation_history: Optional[List[Dict]] = None,
         provider: Optional[str] = None,

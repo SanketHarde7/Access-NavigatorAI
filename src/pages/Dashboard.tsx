@@ -62,7 +62,7 @@ export function Dashboard({ stadiumId }: DashboardProps) {
   );
 
   return (
-    <div className="space-y-4 p-3 sm:p-4 max-w-7xl mx-auto">
+    <div className="space-y-3.5 px-3 sm:px-4 pb-4 max-w-7xl mx-auto">
       {/* Mobile Segmented View Switcher */}
       <div className="flex lg:hidden items-center justify-between p-1 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 text-xs">
         {[
@@ -89,8 +89,8 @@ export function Dashboard({ stadiumId }: DashboardProps) {
         })}
       </div>
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      {/* Top 4 Stat HUD Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
         {[
           { label: "Zones", value: zones.length, icon: <Map className="h-4 w-4" />, iconColor: "#60a5fa" },
           { label: "Operational", value: zones.filter((z) => z.status === "operational").length, icon: <Activity className="h-4 w-4" />, iconColor: "#34d399" },
@@ -101,7 +101,7 @@ export function Dashboard({ stadiumId }: DashboardProps) {
             key={stat.label}
             variant="stat"
             tilt
-            maxTilt={5}
+            maxTilt={4}
             className="p-2.5 sm:p-3"
           >
             <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
@@ -122,11 +122,12 @@ export function Dashboard({ stadiumId }: DashboardProps) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Map & Route */}
-        <div className={`lg:col-span-2 space-y-4 ${mobileTab === "planner" || mobileTab === "zones" ? "hidden lg:block" : ""}`}>
-          <GlassCard tilt maxTilt={4} className="rounded-xl p-3 sm:p-4">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
+      {/* Main Interactive Stage: Left (Map & Route) | Right (Route Planner & Demo) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
+        {/* LEFT PANEL (7 cols on desktop): Live Stadium Map */}
+        <div className={`lg:col-span-7 space-y-3.5 ${mobileTab === "planner" || mobileTab === "zones" ? "hidden lg:block" : ""}`}>
+          <GlassCard tilt maxTilt={3} className="rounded-xl p-3 sm:p-4">
+            <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <span
                   className="p-1.5 rounded-lg"
@@ -140,7 +141,7 @@ export function Dashboard({ stadiumId }: DashboardProps) {
                 </span>
                 Live Stadium Map
               </h2>
-              <span className="text-[10px] text-slate-500 glass-pill px-2 py-0.5 rounded-full">
+              <span className="text-[10px] text-slate-400 glass-pill px-2.5 py-0.5 rounded-full border border-white/10">
                 Updated: {lastUpdated.toLocaleTimeString()}
               </span>
             </div>
@@ -157,9 +158,9 @@ export function Dashboard({ stadiumId }: DashboardProps) {
           <RouteResultCard route={route} />
         </div>
 
-        {/* Sidebar Controls & Route Planner */}
-        <div className={`space-y-4 ${mobileTab === "map" || mobileTab === "zones" ? "hidden lg:block" : ""}`}>
-          <GlassCard tilt maxTilt={4} className="rounded-xl p-3 sm:p-4">
+        {/* RIGHT PANEL (5 cols on desktop): Route Planner + Demo Controls */}
+        <div className={`lg:col-span-5 space-y-3.5 ${mobileTab === "map" || mobileTab === "zones" ? "hidden lg:block" : ""}`}>
+          <GlassCard tilt maxTilt={3} className="rounded-xl p-3 sm:p-4">
             <RoutePlanner
               zones={zones}
               loading={routeLoading}
@@ -175,7 +176,7 @@ export function Dashboard({ stadiumId }: DashboardProps) {
         </div>
       </div>
 
-      {/* Zone Grid */}
+      {/* Zone Status Grid */}
       <div className={`${mobileTab === "map" || mobileTab === "planner" ? "hidden lg:block" : ""}`}>
         <GlassCard tilt={false} className="rounded-xl p-3 sm:p-4">
           <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
@@ -195,7 +196,7 @@ export function Dashboard({ stadiumId }: DashboardProps) {
         </GlassCard>
       </div>
 
-      {/* Caption */}
+      {/* Caption Overlay */}
       <CaptionOverlay caption={caption} onDismiss={clearCaption} />
     </div>
   );

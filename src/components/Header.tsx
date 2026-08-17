@@ -30,20 +30,21 @@ interface HeaderProps {
 
 export function Header({ connected, stadiumName, onMenuClick, sidebarOpen }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-50 w-full glass-3d-header">
-      <div className="flex h-14 items-center px-3 sm:px-4 gap-2.5 sm:gap-4">
+    <header className="w-full shrink-0 px-3 sm:px-4 pt-2.5 pb-1 z-30">
+      <div className="flex h-12 items-center px-3 sm:px-5 gap-2.5 sm:gap-4 rounded-2xl glass-3d-header shadow-xl border border-white/15">
         <Button
           variant="ghost"
           size="icon"
           onClick={onMenuClick}
-          className="hover:bg-white/5 transition-transform active:scale-95 shrink-0 h-9 w-9"
+          className="hover:bg-white/10 transition-transform active:scale-95 shrink-0 h-9 w-9 rounded-xl border border-white/10"
           style={{ color: "var(--theme-accent)" }}
           aria-label="Toggle menu"
+          title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
 
-        <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="relative shrink-0">
             <div
               className="absolute inset-0 rounded-full blur-md"
@@ -77,25 +78,25 @@ export function Header({ connected, stadiumName, onMenuClick, sidebarOpen }: Hea
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             onClick={onMenuClick}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full glass-pill hover:bg-white/10 transition-all max-w-[120px] sm:max-w-[180px]"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-white/15 transition-all max-w-[130px] sm:max-w-[200px] border border-white/10"
             title="Switch stadium"
           >
             <Activity
               className="h-3.5 w-3.5 shrink-0"
               style={{ color: "var(--theme-accent)" }}
             />
-            <span className="text-[11px] sm:text-xs text-slate-200 truncate">
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-100 truncate">
               {stadiumName}
             </span>
           </button>
 
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full glass-pill shrink-0">
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl glass-pill shrink-0 border border-white/10">
             {connected ? (
               <Wifi className="h-3.5 w-3.5 text-emerald-400" />
             ) : (
               <WifiOff className="h-3.5 w-3.5 text-red-400" />
             )}
-            <span className={`text-[11px] sm:text-xs font-medium ${connected ? "text-emerald-400" : "text-red-400"}`}>
+            <span className={`text-[11px] sm:text-xs font-semibold ${connected ? "text-emerald-400" : "text-red-400"}`}>
               {connected ? "Live" : "Offline"}
             </span>
             {connected && (

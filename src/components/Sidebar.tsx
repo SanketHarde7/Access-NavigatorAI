@@ -62,14 +62,14 @@ const navItems: { page: Page; label: string; icon: React.ReactNode }[] = [
 ];
 
 const stadiums = [
-  { id: "metlife", name: "MetLife Stadium", location: "East Rutherford, NJ" },
-  { id: "sofi", name: "SoFi Stadium", location: "Inglewood, CA" },
-  { id: "azteca", name: "Estadio Azteca", location: "Mexico City, MX" },
+  { id: "narendra_modi", name: "Narendra Modi Stadium", location: "Ahmedabad, Gujarat", tag: "132K", color: "#ff5e00" },
+  { id: "wankhede", name: "Wankhede Stadium", location: "Mumbai, Maharashtra", tag: "33K", color: "#00e5ff" },
+  { id: "chinnaswamy", name: "M. Chinnaswamy Stadium", location: "Bengaluru, Karnataka", tag: "40K", color: "#f43f5e" },
+  { id: "eden_gardens", name: "Eden Gardens", location: "Kolkata, West Bengal", tag: "68K", color: "#10b981" },
+  { id: "arun_jaitley", name: "Arun Jaitley Stadium", location: "New Delhi, Delhi", tag: "42K", color: "#c084fc" },
 ];
 
 export function Sidebar({ open, currentPage, onPageChange, stadiumId, onStadiumChange, onClose }: SidebarProps) {
-  if (!open) return null;
-
   const handlePageSelect = (page: Page) => {
     onPageChange(page);
     if (window.innerWidth < 1024 && onClose) {
@@ -87,87 +87,114 @@ export function Sidebar({ open, currentPage, onPageChange, stadiumId, onStadiumC
   return (
     <>
       {/* Mobile Backdrop Overlay */}
-      <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-md z-40 lg:hidden transition-opacity duration-300"
-        onClick={onClose}
-        aria-hidden
-      />
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
 
-      <aside className="fixed left-0 top-0 lg:top-14 bottom-0 z-50 w-72 lg:w-64 glass-3d-sidebar flex flex-col shadow-2xl border-r border-white/10 animate-in slide-in-from-left duration-300">
-        {/* Mobile Header with Close Button */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 lg:hidden">
+      {/* Sidebar: Static column on desktop, rich drawer on mobile */}
+      <aside
+        className={`${
+          open ? "flex" : "hidden"
+        } fixed lg:static left-0 top-0 bottom-0 z-50 lg:z-auto w-80 max-w-[85vw] lg:w-64 h-full shrink-0 bg-[#060a1c]/95 lg:bg-transparent backdrop-blur-2xl lg:backdrop-blur-none glass-3d-subtle border-r border-white/15 flex-col transition-all duration-300 shadow-2xl lg:shadow-none`}
+      >
+        {/* Top Header with Close Button on Mobile */}
+        <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-2">
-            <Landmark className="h-5 w-5" style={{ color: "var(--theme-accent)" }} />
-            <span className="text-sm font-bold text-white">Menu & Stadiums</span>
+            <div
+              className="h-2.5 w-2.5 rounded-full animate-ping"
+              style={{ background: "var(--theme-accent)" }}
+            />
+            <span className="text-xs font-semibold tracking-wider text-slate-300 uppercase">
+              Stadium Hub
+            </span>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 text-slate-400 hover:text-white"
-          >
-            <X className="h-5 w-5" />
-          </Button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              aria-label="Close sidebar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
-        <ScrollArea className="flex-1 py-4">
+        <ScrollArea className="flex-1 py-4 min-h-0">
           {/* Stadium Selector */}
-          <div className="px-4 mb-4">
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">
-              Stadium
+          <div className="px-4 mb-2">
+            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
+              <span>Premier Stadiums</span>
+              <span className="text-[10px] text-amber-400 font-normal">5 Venues</span>
             </label>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {stadiums.map((s) => {
                 const active = stadiumId === s.id;
                 return (
                   <button
                     key={s.id}
                     onClick={() => handleStadiumSelect(s.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-300 group ${
-                    active
-                      ? "glass-3d-subtle glow-ring"
-                      : "hover:bg-white/5 border border-transparent hover:border-white/10"
-                  }`}
-                  style={
-                    active
-                      ? {
-                          borderColor: "var(--theme-border)",
-                        }
-                      : undefined
-                  }
-                >
-                  <span
-                    className="shrink-0 p-1.5 rounded-lg transition-transform group-hover:scale-110"
-                    style={{
-                      background: active ? "var(--theme-bg)" : "transparent",
-                      boxShadow: active ? `0 0 12px var(--theme-glow)` : "none",
-                    }}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-300 group relative overflow-hidden ${
+                      active
+                        ? "glass-3d-subtle glow-ring"
+                        : "hover:bg-white/5 border border-transparent hover:border-white/10"
+                    }`}
+                    style={
+                      active
+                        ? {
+                            borderColor: "var(--theme-border)",
+                            boxShadow: `0 0 16px var(--theme-glow)`,
+                          }
+                        : undefined
+                    }
                   >
-                    <Landmark
-                      className="h-4 w-4"
-                      style={{ color: active ? "var(--theme-accent)" : "#64748b" }}
-                    />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div
-                      className="text-sm font-medium truncate"
-                      style={{ color: active ? "var(--theme-accent)" : "#cbd5e1" }}
+                    <span
+                      className="shrink-0 p-1.5 rounded-lg transition-transform group-hover:scale-110 flex items-center justify-center"
+                      style={{
+                        background: active ? "var(--theme-bg)" : `${s.color}18`,
+                        border: `1px solid ${active ? "var(--theme-accent)" : `${s.color}33`}`,
+                      }}
                     >
-                      {s.name}
+                      <Landmark
+                        className="h-4 w-4"
+                        style={{ color: active ? "var(--theme-accent)" : s.color }}
+                      />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-1">
+                        <span
+                          className="text-xs font-semibold truncate"
+                          style={{ color: active ? "var(--theme-accent)" : "#f1f5f9" }}
+                        >
+                          {s.name}
+                        </span>
+                        <span
+                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0"
+                          style={{
+                            background: active ? "var(--theme-bg)" : "rgba(255,255,255,0.06)",
+                            color: active ? "var(--theme-accent)" : "#94a3b8",
+                            border: `1px solid ${active ? "var(--theme-border)" : "rgba(255,255,255,0.08)"}`,
+                          }}
+                        >
+                          {s.tag}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate mt-0.5">{s.location}</div>
                     </div>
-                    <div className="text-[10px] text-slate-500 truncate">{s.location}</div>
-                  </div>
-                  {active && (
-                    <ChevronRight
-                      className="h-4 w-4 shrink-0 animate-pulse"
-                      style={{ color: "var(--theme-accent)" }}
-                    />
-                  )}
-                </button>
-              );
-            })}
+                    {active && (
+                      <ChevronRight
+                        className="h-4 w-4 shrink-0 animate-pulse ml-0.5"
+                        style={{ color: "var(--theme-accent)" }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
         <div className="mx-4 my-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 

@@ -98,11 +98,11 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
   }, [zones, graph]);
 
   const svgW = 700;
-  const svgH = 500;
+  const svgH = 430;
 
   const scaleCoord = useCallback((c: ZoneCoord) => ({
     x: 50 + c.x * 600,
-    y: 50 + c.y * 400
+    y: 40 + c.y * 350,
   }), []);
 
   // Efficiency: memoized SVG geometry keeps live crowd refreshes cheap while preserving the accessibility map semantics.
@@ -150,7 +150,7 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
         <svg
           viewBox={`0 0 ${svgW} ${svgH}`}
           preserveAspectRatio="xMidYMid meet"
-          className="relative z-10 w-full h-auto block select-none"
+          className="relative z-10 w-full h-auto max-h-[380px] block select-none"
         >
           <defs>
             <linearGradient id="zoneGlow" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -170,14 +170,14 @@ export function StadiumMap({ zones, route, stadiumId, onZoneClick, selectedStart
           {/* Stadium outline — themed ellipse with depth */}
           <ellipse
             cx={svgW / 2} cy={svgH / 2}
-            rx="320" ry="220"
+            rx="320" ry="195"
             fill="url(#zoneGlow)" strokeWidth="2"
             style={{ stroke: "var(--theme-border)" }}
             filter="url(#zoneShadow)"
           />
           <ellipse
             cx={svgW / 2} cy={svgH / 2}
-            rx="150" ry="90"
+            rx="150" ry="80"
             fill="var(--theme-bg)" strokeWidth="1" strokeDasharray="8,4"
             style={{ stroke: "var(--theme-accent)" }}
           />

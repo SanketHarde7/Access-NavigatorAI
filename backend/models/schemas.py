@@ -154,7 +154,7 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     """Conversational AI request."""
     user_id: str
-    stadium_id: Optional[str] = "metlife"
+    stadium_id: Optional[str] = "narendra_modi"
     accessibility_need: Optional[AccessibilityNeed] = AccessibilityNeed.wheelchair
     message: str
     conversation_history: Optional[List[ChatMessage]] = []
@@ -241,7 +241,7 @@ class BatchZoneUpdate(BaseModel):
 class DemoScenario(BaseModel):
     """Demo scenario configuration."""
     scenario_type: Literal["normal", "blocked", "emergency", "halftime", "evacuation"]
-    stadium_id: str = "metlife"
+    stadium_id: str = "narendra_modi"
 
 
 class DemoResponse(BaseModel):
